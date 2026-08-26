@@ -28,7 +28,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-primary);
-            padding: 12px;
+            padding: 10px;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
@@ -39,8 +39,8 @@
 
         .dashboard-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: 1fr 1.1fr; /* 右邊匯率略寬以容納多種貨幣 */
+            gap: 10px;
             width: 100%;
             height: 100%;
             max-width: 1000px;
@@ -50,7 +50,7 @@
         .column {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             height: 100%;
         }
 
@@ -58,8 +58,8 @@
             background: var(--card-bg);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 12px 16px;
+            border-radius: 12px;
+            padding: 10px 14px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
@@ -68,13 +68,13 @@
 
         /* 左側：時間、農曆/節氣 */
         .time-card {
-            flex: 1.4;
+            flex: 1.3;
             text-align: center;
             background: linear-gradient(135deg, rgba(28, 37, 65, 0.9), rgba(11, 19, 43, 0.9));
         }
 
         #clock {
-            font-size: 2.5rem;
+            font-size: 2.3rem;
             font-weight: 800;
             letter-spacing: 1px;
             line-height: 1.1;
@@ -83,31 +83,31 @@
         }
 
         #date {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
         #lunar-info {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #60a5fa;
             font-weight: 600;
             margin-top: 2px;
         }
 
         #countdown {
-            margin-top: 6px;
-            font-size: 0.8rem;
+            margin-top: 5px;
+            font-size: 0.75rem;
             color: var(--accent-warn);
             background: rgba(245, 158, 11, 0.1);
-            padding: 3px 8px;
+            padding: 2px 8px;
             border-radius: 6px;
             display: inline-block;
         }
 
         /* 天氣卡片 */
         .weather-card {
-            flex: 1.2;
+            flex: 1.1;
         }
 
         .weather-alert {
@@ -115,10 +115,10 @@
             background: rgba(239, 68, 68, 0.2);
             color: #fca5a5;
             border: 1px solid rgba(239, 68, 68, 0.4);
-            padding: 2px 6px;
+            padding: 1px 5px;
             border-radius: 4px;
-            font-size: 0.8rem;
-            margin-top: 4px;
+            font-size: 0.75rem;
+            margin-top: 3px;
             font-weight: bold;
         }
 
@@ -132,84 +132,108 @@
             justify-content: space-between;
             align-items: center;
             background: rgba(255, 255, 255, 0.04);
-            padding: 8px 12px;
-            border-radius: 10px;
-            margin-top: 6px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            margin-top: 4px;
         }
 
         #hsi-price {
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             font-weight: bold;
         }
 
         #hsi-change {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: bold;
         }
 
         .update-time {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-secondary);
             text-align: right;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
-        /* 匯率與換算器卡片 */
+        /* 匯率卡片（優化排版：多貨幣網格） */
         .fx-card {
-            flex: 1.8;
-            justify-content: flex-start;
+            flex: 2;
+            justify-content: space-between;
         }
 
-        .fx-select-group {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            margin-top: 8px;
+        .fx-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+            margin-top: 6px;
         }
 
-        .fx-select-group select, .fx-select-group input {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #fff;
-            padding: 6px 8px;
+        .fx-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 6px;
-            font-size: 0.9rem;
+            padding: 4px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .fx-item:active, .fx-item.active {
+            background: rgba(59, 130, 246, 0.25);
+            border-color: var(--accent-blue);
+        }
+
+        .fx-name {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .fx-rate {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .fx-converter {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .fx-converter input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            width: 70px;
+            text-align: right;
             outline: none;
             -webkit-user-select: text;
             user-select: text;
-        }
-
-        .fx-select-group select {
-            flex: 1;
-        }
-
-        .fx-select-group input {
-            width: 80px;
-            text-align: right;
         }
 
         .swap-btn {
             background: var(--accent-blue);
             border: none;
             color: white;
-            padding: 6px 10px;
-            border-radius: 6px;
+            padding: 3px 8px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 0.75rem;
             font-weight: bold;
         }
 
-        .fx-result-box {
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 8px;
-            padding: 8px 12px;
-            margin-top: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
         .card-title {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: bold;
             color: var(--text-secondary);
             display: flex;
@@ -232,12 +256,12 @@
 
             <div class="card weather-card">
                 <div class="card-title">香港即時天氣</div>
-                <div id="weather-info" style="font-size: 1.15rem; margin-top: 6px; line-height: 1.4;">載入天氣數據中...</div>
+                <div id="weather-info" style="font-size: 1.1rem; margin-top: 4px; line-height: 1.3;">載入天氣數據中...</div>
                 <div id="weather-alerts"></div>
             </div>
         </div>
 
-        <!-- 右欄：恆指、即時匯率換算器 -->
+        <!-- 右欄：恆指、即時匯率一覽與換算器 -->
         <div class="column">
             <div class="card hsi-card">
                 <div class="card-title">香港恆生指數 (HSI)</div>
@@ -250,33 +274,51 @@
 
             <div class="card fx-card">
                 <div class="card-title">
-                    <span>即時外幣匯率 & 換算</span>
-                    <span id="fx-update-time" style="font-size: 0.75rem; font-weight: normal;">更新中...</span>
+                    <span>即時外幣牌價 (兌 HKD)</span>
+                    <span id="fx-update-time" style="font-size: 0.7rem; font-weight: normal;">更新中...</span>
                 </div>
 
-                <!-- 貨幣選擇與換算輸入 -->
-                <div class="fx-select-group">
-                    <select id="currency-select" onchange="calculateFX()">
-                        <option value="CHF">CHF 瑞士法郎</option>
-                        <option value="EUR">EUR 歐元</option>
-                        <option value="JPY">JPY 日圓</option>
-                        <option value="KRW">KRW 韓圓 (WON)</option>
-                    </select>
-
-                    <button class="swap-btn" onclick="toggleDirection()" title="切換換算方向">⇄</button>
-
-                    <input type="number" id="fx-amount" value="100" oninput="calculateFX()">
-                </div>
-
-                <!-- 換算結果與當前牌價 -->
-                <div class="fx-result-box">
-                    <div>
-                        <div id="fx-dir-label" style="font-size: 0.75rem; color: var(--text-secondary);">外幣 ➜ 港幣</div>
-                        <div id="fx-result" style="font-size: 1.3rem; font-weight: bold; color: #10b981;">計算中...</div>
+                <!-- 7 種主要外幣牌價一覽表 -->
+                <div class="fx-grid">
+                    <div class="fx-item active" id="item-USD" onclick="selectCurrency('USD')">
+                        <span class="fx-name">USD 美元</span>
+                        <span class="fx-rate" id="rate-USD">--</span>
                     </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 0.75rem; color: var(--text-secondary);">參考匯率</div>
-                        <div id="fx-rate-display" style="font-size: 0.95rem; font-weight: bold; color: #60a5fa;">--</div>
+                    <div class="fx-item" id="item-EUR" onclick="selectCurrency('EUR')">
+                        <span class="fx-name">EUR 歐元</span>
+                        <span class="fx-rate" id="rate-EUR">--</span>
+                    </div>
+                    <div class="fx-item" id="item-GBP" onclick="selectCurrency('GBP')">
+                        <span class="fx-name">GBP 英鎊</span>
+                        <span class="fx-rate" id="rate-GBP">--</span>
+                    </div>
+                    <div class="fx-item" id="item-CHF" onclick="selectCurrency('CHF')">
+                        <span class="fx-name">CHF 瑞郎</span>
+                        <span class="fx-rate" id="rate-CHF">--</span>
+                    </div>
+                    <div class="fx-item" id="item-JPY" onclick="selectCurrency('JPY')">
+                        <span class="fx-name">JPY 日圓</span>
+                        <span class="fx-rate" id="rate-JPY">--</span>
+                    </div>
+                    <div class="fx-item" id="item-AUD" onclick="selectCurrency('AUD')">
+                        <span class="fx-name">AUD 澳元</span>
+                        <span class="fx-rate" id="rate-AUD">--</span>
+                    </div>
+                    <div class="fx-item" id="item-KRW" onclick="selectCurrency('KRW')" style="grid-column: span 2;">
+                        <span class="fx-name">KRW 韓圓 (WON)</span>
+                        <span class="fx-rate" id="rate-KRW">--</span>
+                    </div>
+                </div>
+
+                <!-- 底部點擊動態換算器 -->
+                <div class="fx-converter">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span id="fx-dir-label" style="font-size: 0.75rem; color: #60a5fa; font-weight: bold;">USD ➜ HKD</span>
+                        <button class="swap-btn" onclick="toggleDirection()">⇄</button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <input type="number" id="fx-amount" value="100" oninput="calculateFX()">
+                        <span id="fx-result" style="font-size: 0.95rem; font-weight: bold; color: #10b981;">--</span>
                     </div>
                 </div>
             </div>
@@ -284,8 +326,9 @@
     </div>
 
     <script>
-        // 全局匯率儲存 (以 HKD 為基準)
-        let fxRates = { CHF: 0, EUR: 0, JPY: 0, KRW: 0 };
+        // 支持的 7 種貨幣
+        let fxRates = { USD: 0, EUR: 0, GBP: 0, CHF: 0, JPY: 0, AUD: 0, KRW: 0 };
+        let selectedCurr = 'USD';
         let isForeignToHkd = true; // true: 外幣轉HKD, false: HKD轉外幣
 
         // 1. 時鐘與西曆日期
@@ -369,7 +412,7 @@
                 const humidity = data.humidity.data[0].value;
                 const rainfall = data.rainfall.data[0]?.max || 0;
 
-                weatherEl.innerHTML = `🌡️ <b>${temp}°C</b> &nbsp;|&nbsp; 💧 <b>${humidity}%</b><br><span style="font-size:0.85rem; color:#94a3b8;">🌧️ 今日降雨量: ${rainfall} mm</span>`;
+                weatherEl.innerHTML = `🌡️ <b>${temp}°C</b> &nbsp;|&nbsp; 💧 <b>${humidity}%</b><br><span style="font-size:0.8rem; color:#94a3b8;">🌧️ 今日降雨量: ${rainfall} mm</span>`;
 
                 const warnRes = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=tc');
                 const warnData = await warnRes.json();
@@ -381,7 +424,7 @@
                         if (warn.name) alertHtml += `<span class="weather-alert">⚠️ ${warn.name}</span> `;
                     }
                 }
-                alertsEl.innerHTML = alertHtml || '<span style="font-size:0.75rem; color:#10b981; margin-top:4px; display:block;">現時無特別天氣警告</span>';
+                alertsEl.innerHTML = alertHtml || '<span style="font-size:0.75rem; color:#10b981; margin-top:2px; display:block;">現時無特別天氣警告</span>';
 
             } catch (err) {
                 weatherEl.textContent = '天氣數據讀取失敗';
@@ -422,18 +465,24 @@
             }
         }
 
-        // 6. 即時外幣匯率數據 (使用開放公開 API)
+        // 6. 即時外幣匯率數據抓取
         async function fetchFX() {
             try {
                 const res = await fetch('https://open.er-api.com/v6/latest/HKD');
                 const data = await res.json();
 
                 if (data && data.rates) {
-                    // 計算以 HKD 為基準的匯率 (1的外幣 = 多少 HKD)
-                    fxRates.CHF = 1 / data.rates.CHF;
-                    fxRates.EUR = 1 / data.rates.EUR;
-                    fxRates.JPY = 1 / data.rates.JPY;
-                    fxRates.KRW = 1 / data.rates.KRW;
+                    for (let key in fxRates) {
+                        if (data.rates[key]) {
+                            fxRates[key] = 1 / data.rates[key];
+                            const rateEl = document.getElementById(`rate-${key}`);
+                            if (rateEl) {
+                                // JPY 與 KRW 顯示位數調整，其餘保留 4 位小數
+                                const decimals = (key === 'JPY' || key === 'KRW') ? 4 : 3;
+                                rateEl.textContent = fxRates[key].toFixed(decimals);
+                            }
+                        }
+                    }
 
                     const now = new Date();
                     document.getElementById('fx-update-time').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 更新`;
@@ -445,37 +494,41 @@
             }
         }
 
-        // 換算方向切換
+        // 選擇換算貨幣
+        function selectCurrency(curr) {
+            selectedCurr = curr;
+            document.querySelectorAll('.fx-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`item-${curr}`).classList.add('active');
+            calculateFX();
+        }
+
+        // 切換換算方向
         function toggleDirection() {
             isForeignToHkd = !isForeignToHkd;
             calculateFX();
         }
 
-        // 執行匯率計算與畫面更新
+        // 計算換算結果
         function calculateFX() {
-            const curr = document.getElementById('currency-select').value;
             const amount = parseFloat(document.getElementById('fx-amount').value) || 0;
-            const rate = fxRates[curr];
+            const rate = fxRates[selectedCurr];
 
             const dirLabel = document.getElementById('fx-dir-label');
             const resultEl = document.getElementById('fx-result');
-            const rateDisplay = document.getElementById('fx-rate-display');
 
             if (!rate) {
                 resultEl.textContent = "載入中...";
                 return;
             }
 
-            rateDisplay.textContent = `1 ${curr} = ${rate.toFixed(4)} HKD`;
-
             if (isForeignToHkd) {
-                dirLabel.textContent = `${curr} ➜ HKD`;
+                dirLabel.textContent = `${selectedCurr} ➜ HKD`;
                 const totalHKD = amount * rate;
-                resultEl.textContent = `$${totalHKD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} HKD`;
+                resultEl.textContent = `$${totalHKD.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} HKD`;
             } else {
-                dirLabel.textContent = `HKD ➜ ${curr}`;
+                dirLabel.textContent = `HKD ➜ ${selectedCurr}`;
                 const totalForeign = amount / rate;
-                resultEl.textContent = `${totalForeign.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${curr}`;
+                resultEl.textContent = `${totalForeign.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${selectedCurr}`;
             }
         }
 
