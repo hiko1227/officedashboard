@@ -380,7 +380,7 @@
                 <!-- 寶寶陪伴區塊 -->
                 <div class="cat-box" onclick="interactWithBobo()">
                     <div class="cat-avatar-container">
-                        <img id="bobo-img" src="bobo_playful.png" alt="寶寶" class="bobo-photo" onerror="this.src='https://placehold.co/100x100/f472b6/ffffff?text=Bobo'">
+                        <img id="bobo-img" src="bobo_playful.jpeg" alt="寶寶" class="bobo-photo" onerror="this.src='https://placehold.co/100x100/f472b6/ffffff?text=Bobo'">
                         <span id="bobo-heart" class="heart-pop">❤️</span>
                     </div>
                     <div class="cat-speech-container">
@@ -478,10 +478,10 @@
             updateWorkProgress(now);
         }
 
-        // 2. 寶寶動態表情與語錄庫
+        // 2. 寶寶動態表情與語錄庫（採用 .jpeg 副檔名）
         const boboConfig = {
             morning: {
-                img: 'bobo_playful.png',
+                img: 'bobo_playful.jpeg',
                 quotes: [
                     "主子早晨！今日都要精精神神呀～ 🐾",
                     "早安！記得飲杯溫水開工！☕",
@@ -489,7 +489,7 @@
                 ]
             },
             lunch: {
-                img: 'bobo_happy.png',
+                img: 'bobo_happy.jpeg',
                 quotes: [
                     " Lunch 時間到！記得食飽啲呀！🍱",
                     "唔好只顧住做嘢，快啲去食飯！🍗",
@@ -497,7 +497,7 @@
                 ]
             },
             afternoon: {
-                img: 'bobo_curious.png',
+                img: 'bobo_curious.jpeg',
                 quotes: [
                     "坐太久啦，起身伸展下、飲杯水！💧",
                     "眼睛攰唔攰呀？望下遠方放鬆下～ 🌿",
@@ -506,7 +506,7 @@
                 ]
             },
             leavingSoon: {
-                img: 'bobo_love.png',
+                img: 'bobo_love.jpeg',
                 quotes: [
                     "快放工啦！最後衝刺，準備收拾心情！🎒",
                     "倒數階段！放工想點樣獎勵自己？✨",
@@ -514,7 +514,7 @@
                 ]
             },
             afterWork: {
-                img: 'bobo_cozy.png',
+                img: 'bobo_cozy.jpeg',
                 quotes: [
                     "🎉 恭喜放工！辛苦啦，快啲回家陪我！",
                     "終於放工啦！今日做得好棒，好好休息下～ ❤️",
@@ -522,7 +522,7 @@
                 ]
             },
             interaction: {
-                img: 'bobo_shy.png',
+                img: 'bobo_shy.jpeg',
                 quotes: [
                     "喵～ 捏捏臉，你最棒啦！❤️",
                     "（咕嚕咕嚕...）寶寶最鍾意你啦～ 🐾",
@@ -566,7 +566,6 @@
             document.getElementById('work-percent').textContent = `${percent.toFixed(0)}%`;
             document.getElementById('work-bar').style.width = `${percent}%`;
 
-            // 當沒有在手動點擊時，自動切換對應時間段的圖片與文字
             if (!window.isInteracting) {
                 document.getElementById('bobo-img').src = currentStatus.img;
                 document.getElementById('cat-text').textContent = getRandomQuote(currentStatus.quotes);
@@ -581,13 +580,11 @@
             document.getElementById('bobo-img').src = status.img;
             document.getElementById('cat-text').textContent = getRandomQuote(status.quotes);
 
-            // 觸發心心動畫
             const heartEl = document.getElementById('bobo-heart');
             heartEl.classList.remove('animate');
-            void heartEl.offsetWidth; // 重置 CSS 動畫
+            void heartEl.offsetWidth;
             heartEl.classList.add('animate');
 
-            // 3.5 秒後恢復時間段預設動態
             clearTimeout(window.interactTimer);
             window.interactTimer = setTimeout(() => {
                 window.isInteracting = false;
