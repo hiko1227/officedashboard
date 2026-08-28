@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>公司桌面資訊儀表板</title>
+    <title>公司桌面資訊儀表板 - 寶寶陪伴版</title>
     <style>
         :root {
             --bg-color: #0b132b;
@@ -106,13 +106,12 @@
             display: inline-block;
         }
 
-        /* 放工進度條與貓咪卡片 */
+        /* 放工進度條與寶寶卡片 */
         .work-cat-card {
-            flex: 1.1;
+            flex: 1.2;
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
             justify-content: space-between;
             padding: 8px 12px;
-            cursor: pointer;
         }
 
         .progress-header {
@@ -126,7 +125,7 @@
         .progress-bar-bg {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            height: 10px;
+            height: 8px;
             width: 100%;
             overflow: hidden;
             margin: 4px 0;
@@ -141,26 +140,83 @@
             transition: width 0.5s ease-in-out;
         }
 
+        /* 寶寶頭像與互動 */
         .cat-box {
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 6px 8px;
-            border-radius: 8px;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 10px;
+            border-radius: 10px;
             margin-top: 4px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+            position: relative;
         }
 
-        .cat-avatar {
-            font-size: 1.8rem;
-            line-height: 1;
+        .cat-box:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .cat-avatar-container {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+        }
+
+        .bobo-photo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-pink);
+            box-shadow: 0 0 8px rgba(244, 114, 182, 0.3);
+            transition: transform 0.3s ease;
+            background-color: #ffffff;
+        }
+
+        .cat-box:hover .bobo-photo {
+            transform: scale(1.08) rotate(5deg);
+        }
+
+        .cat-speech-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .cat-name {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: bold;
         }
 
         .cat-speech {
             font-size: 0.8rem;
-            color: #f472b6;
+            color: var(--accent-pink);
             font-weight: 600;
-            line-height: 1.2;
+            line-height: 1.25;
+        }
+
+        .heart-pop {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 1.2rem;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .heart-pop.animate {
+            animation: popUp 0.6s ease-out forwards;
+        }
+
+        @keyframes popUp {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            50% { transform: translateY(-12px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-20px) scale(1); }
         }
 
         /* 天氣卡片 */
@@ -301,7 +357,7 @@
 <body>
 
     <div class="dashboard-container">
-        <!-- 左欄：時間、放工進度/貓咪陪伴、天氣 -->
+        <!-- 左欄：時間、寶寶放工進度、天氣 -->
         <div class="column">
             <div class="card time-card">
                 <div id="clock">00:00:00</div>
@@ -310,10 +366,10 @@
                 <div><span id="countdown">假期倒數：計算中...</span></div>
             </div>
 
-            <div class="card work-cat-card" onclick="setWorkHours()">
+            <div class="card work-cat-card">
                 <div>
                     <div class="progress-header">
-                        <span>今日放工進度</span>
+                        <span onclick="setWorkHours()" style="cursor: pointer; text-decoration: underline;">放工進度 ⚙️</span>
                         <span id="work-percent" style="font-weight: bold; color: #10b981;">0%</span>
                     </div>
                     <div class="progress-bar-bg">
@@ -321,11 +377,15 @@
                     </div>
                 </div>
 
-                <div class="cat-box">
-                    <div class="cat-avatar" id="cat-icon">🐱</div>
-                    <div>
-                        <div style="font-size: 0.68rem; color: var(--text-secondary);">貓咪主子提醒你：</div>
-                        <div class="cat-speech" id="cat-text">記得飲水伸展下～</div>
+                <!-- 寶寶陪伴區塊 -->
+                <div class="cat-box" onclick="interactWithBobo()">
+                    <div class="cat-avatar-container">
+                        <img id="bobo-img" src="bobo_playful.png" alt="寶寶" class="bobo-photo" onerror="this.src='https://placehold.co/100x100/f472b6/ffffff?text=Bobo'">
+                        <span id="bobo-heart" class="heart-pop">❤️</span>
+                    </div>
+                    <div class="cat-speech-container">
+                        <div class="cat-name">寶寶提醒你：</div>
+                        <div class="cat-speech" id="cat-text">載入中...</div>
                     </div>
                 </div>
             </div>
@@ -418,43 +478,121 @@
             updateWorkProgress(now);
         }
 
-        // 2. 放工進度條與貓咪對話
+        // 2. 寶寶動態表情與語錄庫
+        const boboConfig = {
+            morning: {
+                img: 'bobo_playful.png',
+                quotes: [
+                    "主子早晨！今日都要精精神神呀～ 🐾",
+                    "早安！記得飲杯溫水開工！☕",
+                    "寶寶已經貼貼你，今日工作一定順利！✨"
+                ]
+            },
+            lunch: {
+                img: 'bobo_happy.png',
+                quotes: [
+                    " Lunch 時間到！記得食飽啲呀！🍱",
+                    "唔好只顧住做嘢，快啲去食飯！🍗",
+                    "食飽飯休息下，寶寶陪你養精蓄銳～ 🍰"
+                ]
+            },
+            afternoon: {
+                img: 'bobo_curious.png',
+                quotes: [
+                    "坐太久啦，起身伸展下、飲杯水！💧",
+                    "眼睛攰唔攰呀？望下遠方放鬆下～ 🌿",
+                    "下午茶時間，吃個小點心休息 5 分鐘！🍩",
+                    "再堅持一陣間，今日進度好棒！💪"
+                ]
+            },
+            leavingSoon: {
+                img: 'bobo_love.png',
+                quotes: [
+                    "快放工啦！最後衝刺，準備收拾心情！🎒",
+                    "倒數階段！放工想點樣獎勵自己？✨",
+                    "準備放工啦！寶寶喺度等緊你！😸"
+                ]
+            },
+            afterWork: {
+                img: 'bobo_cozy.png',
+                quotes: [
+                    "🎉 恭喜放工！辛苦啦，快啲回家陪我！",
+                    "終於放工啦！今日做得好棒，好好休息下～ ❤️",
+                    "放工放工！今晚要去食好嘢定返屋企擼貓？🐾"
+                ]
+            },
+            interaction: {
+                img: 'bobo_shy.png',
+                quotes: [
+                    "喵～ 捏捏臉，你最棒啦！❤️",
+                    "（咕嚕咕嚕...）寶寶最鍾意你啦～ 🐾",
+                    "點擊成功！獲得寶寶的幸運加持 🍀",
+                    "偷懶被我發現囉～ 休息完繼續加油！😻"
+                ]
+            }
+        };
+
+        function getRandomQuote(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // 3. 更新放工進度條與寶寶動態切換
+        window.isInteracting = false;
         function updateWorkProgress(now) {
             const currentHour = now.getHours() + now.getMinutes() / 60;
             const totalWorkHours = workEndHour - workStartHour;
-            
             let percent = 0;
-            let catText = "主子加油，今日都要順順利利！";
-            let catIcon = "😸";
+            let currentStatus = boboConfig.morning;
 
             if (currentHour < workStartHour) {
                 percent = 0;
-                catText = "準備返工，飲杯咖啡先！☕";
-                catIcon = "😺";
+                currentStatus = boboConfig.morning;
             } else if (currentHour >= workEndHour) {
                 percent = 100;
-                catText = "🎉 恭喜放工！辛苦啦，快啲返屋企啦！";
-                catIcon = "😻";
+                currentStatus = boboConfig.afterWork;
             } else {
                 const elapsed = currentHour - workStartHour;
                 percent = Math.min(100, Math.max(0, (elapsed / totalWorkHours) * 100));
 
-                if (now.getHours() === 12 || now.getHours() === 13) {
-                    catText = "🍱 食飯時間到！記得食飽啲呀！";
-                    catIcon = "😸";
-                } else if (percent > 75) {
-                    catText = "快放工啦！最後衝刺！💪";
-                    catIcon = "😽";
-                } else if (percent > 40) {
-                    catText = "坐太久啦，起身伸展下、飲杯水！💧";
-                    catIcon = "🐾";
+                if (now.getHours() === 12 || (now.getHours() === 13 && now.getMinutes() < 30)) {
+                    currentStatus = boboConfig.lunch;
+                } else if (percent > 80) {
+                    currentStatus = boboConfig.leavingSoon;
+                } else {
+                    currentStatus = boboConfig.afternoon;
                 }
             }
 
             document.getElementById('work-percent').textContent = `${percent.toFixed(0)}%`;
             document.getElementById('work-bar').style.width = `${percent}%`;
-            document.getElementById('cat-text').textContent = catText;
-            document.getElementById('cat-icon').textContent = catIcon;
+
+            // 當沒有在手動點擊時，自動切換對應時間段的圖片與文字
+            if (!window.isInteracting) {
+                document.getElementById('bobo-img').src = currentStatus.img;
+                document.getElementById('cat-text').textContent = getRandomQuote(currentStatus.quotes);
+            }
+        }
+
+        // 點擊寶寶互動事件
+        function interactWithBobo() {
+            window.isInteracting = true;
+            const status = boboConfig.interaction;
+
+            document.getElementById('bobo-img').src = status.img;
+            document.getElementById('cat-text').textContent = getRandomQuote(status.quotes);
+
+            // 觸發心心動畫
+            const heartEl = document.getElementById('bobo-heart');
+            heartEl.classList.remove('animate');
+            void heartEl.offsetWidth; // 重置 CSS 動畫
+            heartEl.classList.add('animate');
+
+            // 3.5 秒後恢復時間段預設動態
+            clearTimeout(window.interactTimer);
+            window.interactTimer = setTimeout(() => {
+                window.isInteracting = false;
+                updateWorkProgress(new Date());
+            }, 3500);
         }
 
         function setWorkHours() {
@@ -469,7 +607,7 @@
             }
         }
 
-        // 3. 農曆與節氣轉換計算
+        // 4. 農曆與節氣轉換
         function updateLunarDate() {
             try {
                 const now = new Date();
@@ -501,12 +639,11 @@
             }
         }
 
-        // 4. 香港公眾假期倒數 (已全面修復時間戳偏差與跨年農曆問題)
+        // 5. 香港公眾假期倒數
         function updateHolidayCountdown() {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            // JS 月份為 0 至 11（0=1月, 8=9月, 9=10月, 11=12月）
             const holidays = [
                 { name: "中秋節後翌日", date: new Date(2026, 8, 26) },
                 { name: "國慶日", date: new Date(2026, 9, 1) },
@@ -531,7 +668,7 @@
             }
         }
 
-        // 5. 天文台天氣 (顯示黃/紅/黑雨及颱風風球級別)
+        // 6. 天氣
         async function fetchWeather() {
             const weatherEl = document.getElementById('weather-info');
             const alertsEl = document.getElementById('weather-alerts');
@@ -556,30 +693,24 @@
                         const warn = warnData[key];
                         if (warn.name) {
                             let alertText = warn.name;
-
                             if (key === 'WRAIN') {
                                 if (warn.code === 'WRAINA') alertText = '🟡 黃色暴雨警告';
                                 else if (warn.code === 'WRAINR') alertText = '🔴 紅色暴雨警告';
                                 else if (warn.code === 'WRAINB') alertText = '⚫ 黑雨警告';
                             }
-
-                            if (key === 'TCGNL') {
-                                alertText = `🌀 ${warn.name}`;
-                            }
-
+                            if (key === 'TCGNL') alertText = `🌀 ${warn.name}`;
                             alertHtml += `<span class="weather-alert">⚠️ ${alertText}</span> `;
                         }
                     }
                 }
 
                 alertsEl.innerHTML = alertHtml || '<span style="font-size:0.75rem; color:#10b981; margin-top:2px; display:block;">現時無特別天氣警告</span>';
-
             } catch (err) {
                 weatherEl.textContent = '天氣數據讀取失敗';
             }
         }
 
-        // 6. 恆生指數
+        // 7. 恆生指數
         async function fetchHSI() {
             const priceEl = document.getElementById('hsi-price');
             const changeEl = document.getElementById('hsi-change');
@@ -610,7 +741,7 @@
             }
         }
 
-        // 7. 外幣匯率
+        // 8. 外幣匯率
         async function fetchFX() {
             try {
                 const res = await fetch('https://open.er-api.com/v6/latest/HKD');
