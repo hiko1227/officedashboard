@@ -69,7 +69,7 @@
 
         /* 左側：時間、農曆/節氣 */
         .time-card {
-            flex: 1.2;
+            flex: 1.1;
             text-align: center;
             background: linear-gradient(135deg, rgba(28, 37, 65, 0.9), rgba(11, 19, 43, 0.9));
         }
@@ -108,7 +108,7 @@
 
         /* 放工進度條與寶寶卡片 */
         .work-cat-card {
-            flex: 1.2;
+            flex: 1.4;
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
             justify-content: space-between;
             padding: 8px 12px;
@@ -140,14 +140,14 @@
             transition: width 0.5s ease-in-out;
         }
 
-        /* 寶寶頭像與互動 */
+        /* 寶寶頭像與互動（加大圖片與字體） */
         .cat-box {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             background: rgba(255, 255, 255, 0.05);
-            padding: 6px 10px;
-            border-radius: 10px;
+            padding: 8px 12px;
+            border-radius: 12px;
             margin-top: 4px;
             cursor: pointer;
             transition: transform 0.2s ease, background 0.2s ease;
@@ -161,8 +161,8 @@
 
         .cat-avatar-container {
             position: relative;
-            width: 48px;
-            height: 48px;
+            width: 72px;  /* 由 48px 放大至 72px */
+            height: 72px; /* 由 48px 放大至 72px */
             flex-shrink: 0;
         }
 
@@ -171,14 +171,14 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--accent-pink);
-            box-shadow: 0 0 8px rgba(244, 114, 182, 0.3);
+            border: 3px solid var(--accent-pink);
+            box-shadow: 0 0 10px rgba(244, 114, 182, 0.4);
             transition: transform 0.3s ease;
             background-color: #ffffff;
         }
 
         .cat-box:hover .bobo-photo {
-            transform: scale(1.08) rotate(5deg);
+            transform: scale(1.06) rotate(4deg);
         }
 
         .cat-speech-container {
@@ -188,23 +188,24 @@
         }
 
         .cat-name {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
             font-weight: bold;
+            margin-bottom: 2px;
         }
 
         .cat-speech {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--accent-pink);
             font-weight: 600;
-            line-height: 1.25;
+            line-height: 1.3;
         }
 
         .heart-pop {
             position: absolute;
             top: -5px;
             right: -5px;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             opacity: 0;
             pointer-events: none;
         }
@@ -491,7 +492,7 @@
             lunch: {
                 img: 'bobo_happy.jpeg',
                 quotes: [
-                    " Lunch 時間到！記得食飽啲呀！🍱",
+                    "Lunch 時間到！記得食飽啲呀！🍱",
                     "唔好只顧住做嘢，快啲去食飯！🍗",
                     "食飽飯休息下，寶寶陪你養精蓄銳～ 🍰"
                 ]
@@ -532,8 +533,18 @@
             }
         };
 
-        function getRandomQuote(arr) {
-            return arr[Math.floor(Math.random() * arr.length)];
+        // 鎖定當前顯示的句子，防止頻繁刷新
+        let lastQuoteTime = 0;
+        let currentQuote = "";
+
+        function getStableQuote(quotes) {
+            const now = Date.now();
+            // 每 20 秒才自動隨機換一次句說話，避免轉得太快
+            if (!currentQuote || now - lastQuoteTime > 20000 || !quotes.includes(currentQuote)) {
+                currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                lastQuoteTime = now;
+            }
+            return currentQuote;
         }
 
         // 3. 更新放工進度條與寶寶動態切換
@@ -568,17 +579,18 @@
 
             if (!window.isInteracting) {
                 document.getElementById('bobo-img').src = currentStatus.img;
-                document.getElementById('cat-text').textContent = getRandomQuote(currentStatus.quotes);
+                document.getElementById('cat-text').textContent = getStableQuote(currentStatus.quotes);
             }
         }
 
-        // 點擊寶寶互動事件
+        // 點擊寶寶互動事件（延長顯示時間至 8 秒）
         function interactWithBobo() {
             window.isInteracting = true;
             const status = boboConfig.interaction;
 
             document.getElementById('bobo-img').src = status.img;
-            document.getElementById('cat-text').textContent = getRandomQuote(status.quotes);
+            const randomInteractQuote = status.quotes[Math.floor(Math.random() * status.quotes.length)];
+            document.getElementById('cat-text').textContent = randomInteractQuote;
 
             const heartEl = document.getElementById('bobo-heart');
             heartEl.classList.remove('animate');
@@ -586,10 +598,11 @@
             heartEl.classList.add('animate');
 
             clearTimeout(window.interactTimer);
+            // 按一下會維持 8 秒，有充足時間看清句子
             window.interactTimer = setTimeout(() => {
                 window.isInteracting = false;
                 updateWorkProgress(new Date());
-            }, 3500);
+            }, 8000);
         }
 
         function setWorkHours() {
