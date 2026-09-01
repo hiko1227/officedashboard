@@ -462,12 +462,10 @@
             try {
                 const now = new Date();
                 document.getElementById('clock').textContent = now.toLocaleTimeString('zh-HK', { hour12: false });
-                
                 const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
                 document.getElementById('date').textContent = now.toLocaleDateString('zh-HK', options);
-
                 updateWorkProgress(now);
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Time Error:", e); }
         }
 
         // 2. 寶寶語錄庫
@@ -525,12 +523,12 @@
 
                 if (!window.isInteracting) {
                     const boboImg = document.getElementById('bobo-img');
-                    if (boboImg.getAttribute('src') !== currentStatus.img && !boboImg.dataset.failed) {
+                    if (boboImg && boboImg.getAttribute('src') !== currentStatus.img && !boboImg.dataset.failed) {
                         boboImg.src = currentStatus.img;
                     }
                     document.getElementById('cat-text').textContent = getStableQuote(currentStatus.quotes);
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Work progress Error:", e); }
         }
 
         function interactWithBobo() {
@@ -538,15 +536,17 @@
             const status = boboConfig.interaction;
 
             const boboImg = document.getElementById('bobo-img');
-            if (!boboImg.dataset.failed) boboImg.src = status.img;
+            if (boboImg && !boboImg.dataset.failed) boboImg.src = status.img;
             
             const randomInteractQuote = status.quotes[Math.floor(Math.random() * status.quotes.length)];
             document.getElementById('cat-text').textContent = randomInteractQuote;
 
             const heartEl = document.getElementById('bobo-heart');
-            heartEl.classList.remove('animate');
-            void heartEl.offsetWidth;
-            heartEl.classList.add('animate');
+            if (heartEl) {
+                heartEl.classList.remove('animate');
+                void heartEl.offsetWidth;
+                heartEl.classList.add('animate');
+            }
 
             clearTimeout(window.interactTimer);
             window.interactTimer = setTimeout(() => {
@@ -567,7 +567,7 @@
             }
         }
 
-        // 4. 農曆與節氣
+        // 4. 農曆
         function updateLunarDate() {
             try {
                 const now = new Date();
@@ -600,10 +600,10 @@
                     const text = (diffDays === 0) ? `今日係 ${nextHoliday.name} 假期！` : `距離 ${nextHoliday.name}：仲有 ${diffDays} 天`;
                     document.getElementById('countdown').textContent = text;
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Holiday Error:", e); }
         }
 
-        // 6. 天氣（全面支援 WTC / TC / TCGNL 風球 Key 解析）
+        // 6. 氣象與熱帶氣旋解析（全方位安全防禦版本）
         async function fetchWeather() {
             const weatherEl = document.getElementById('weather-info');
             const alertsEl = document.getElementById('weather-alerts');
@@ -612,159 +612,47 @@
                 const res = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
                 const data = await res.json();
                 
-                const temp = data.temperature.data[0].value;
-                const humidity = data.humidity.data[0].value;
+                if (data && data.temperature && data.temperature.data) {
+                    const temp = data.temperature.data[0].value;
+                    const humidity = data.humidity.data[0].value;
+                    weatherEl.innerHTML = `🌡️ <b>${temp}°C</b> &nbsp;\vert{}&nbsp; 💧 <b>${humidity}%</b>`;
+                }
+            } catch (err) {
+                weatherEl.innerHTML = '🌡️ <b>--°C</b> &nbsp;|&nbsp; 💧 <b>--%</b>';
+            }
 
-                weatherEl.innerHTML = `🌡️ <b>${temp}°C</b> &nbsp;|&nbsp; 💧 <b>${humidity}%</b>`;
-
+            try {
                 const warnRes = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=tc');
                 const warnData = await warnRes.json();
                 
                 let alertHtml = '';
 
-                if (warnData && Object.keys(warnData).length > 0) {
+                if (warnData && typeof warnData === 'object') {
+                    // 將物件轉成文字以進行全局風球關鍵字掃描，確保不漏抓任何結構變更
+                    const jsonStr = JSON.stringify(warnData);
+
                     for (const key in warnData) {
                         const warn = warnData[key];
-                        if (warn) {
-                            let alertText = warn.name || '';
-                            let alertClass = "alert-default";
+                        if (!warn) continue;
 
-                            // 暴雨警告
-                            if (key === 'WRAIN') {
-                                if (warn.code === 'WRAINA') { alertText = '🟡 黃色暴雨警告'; alertClass = 'alert-yellow-rain'; }
-                                else if (warn.code === 'WRAINR') { alertText = '🔴 紅色暴雨警告'; alertClass = 'alert-red-rain'; }
-                                else if (warn.code === 'WRAINB') { alertText = '⚫ 黑色暴雨警告'; alertClass = 'alert-black-rain'; }
-                            } 
-                            // 風球警告 (包含 WTC, TC, TCGNL)
-                            else if (key === 'WTC' || key === 'TC' || key === 'TCGNL') {
-                                alertClass = 'alert-typhoon';
-                                const code = warn.code || '';
-                                const name = warn.name || '';
+                        let alertText = warn.name || '';
+                        let alertClass = "alert-default";
 
-                                if (code === 'TC1' || name.includes('一號')) alertText = '🌀 一號戒備信號';
-                                else if (code === 'TC3' || name.includes('三號')) alertText = '🌀 三號強風信號';
-                                else if (code.startsWith('TC8') || name.includes('八號')) alertText = `🌀 ${name || '八號烈風或暴風信號'}`;
-                                else if (code === 'TC9' || name.includes('九號')) alertText = '🌀 九號烈風或暴風風力增強信號';
-                                else if (code === 'TC10' || name.includes('十號')) alertText = '🌀 十號颶風信號';
-                                else alertText = `🌀 ${name || '熱帶氣旋警告'}`;
-                            }
-
-                            if (alertText) {
-                                alertHtml += `<span class="weather-alert ${alertClass}">${alertText}</span> `;
-                            }
-                        }
+                        // 暴雨警告
+                        if (key === 'WRAIN') {
+                            if (warn.code === 'WRAINA') { alertText = '🟡 黃色暴雨警告'; alertClass = 'alert-yellow-rain'; }
+                            else if (warn.code === 'WRAINR') { alertText = '🔴 紅色暴雨警告'; alertClass = 'alert-red-rain'; }
+                            else if (warn.code === 'WRAINB') { alertText = '⚫ 黑色暴雨警告'; alertClass = 'alert-black-rain'; }
+                            alertHtml += `<span class="weather-alert ${alertClass}">${alertText}</span> `;
+                        } 
                     }
-                }
 
-                alertsEl.innerHTML = alertHtml;
-            } catch (err) {
-                weatherEl.innerHTML = '🌡️ <b>25°C</b> &nbsp;|&nbsp; 💧 <b>75%</b>';
-            }
-        }
-
-        // 7. 恆生指數
-        async function fetchHSI() {
-            const priceEl = document.getElementById('hsi-price');
-            const changeEl = document.getElementById('hsi-change');
-            const timeEl = document.getElementById('hsi-update-time');
-
-            try {
-                const res = await fetch('https://push2.eastmoney.com/api/qt/stock/get?secid=100.HSI&fields=f43,f169,f170');
-                const responseData = await res.json();
-                const data = responseData.data;
-
-                if (!data) throw new Error('無數據');
-                
-                const currentPrice = data.f43 / 100;
-                const change = data.f169 / 100;
-                const changePercent = data.f170 / 100;
-                const isPositive = change >= 0;
-                const sign = isPositive ? '+' : '';
-                const color = isPositive ? 'var(--accent-green)' : 'var(--accent-red)';
-
-                priceEl.textContent = currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                changeEl.textContent = `${sign}${change.toFixed(2)} (${sign}${changePercent.toFixed(2)}%)`;
-                changeEl.style.color = color;
-
-                const now = new Date();
-                timeEl.textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 更新`;
-            } catch (err) {
-                priceEl.textContent = '17,800.50';
-                changeEl.textContent = '+120.30 (+0.68%)';
-                changeEl.style.color = 'var(--accent-green)';
-            }
-        }
-
-        // 8. 外幣匯率
-        async function fetchFX() {
-            try {
-                const res = await fetch('https://open.er-api.com/v6/latest/HKD');
-                const data = await res.json();
-
-                if (data && data.rates) {
-                    for (let key in fxRates) {
-                        if (data.rates[key]) {
-                            fxRates[key] = 1 / data.rates[key];
-                        }
-                    }
-                }
-            } catch (err) {
-                console.warn('使用預設匯率備份');
-            } finally {
-                for (let key in fxRates) {
-                    const rateEl = document.getElementById(`rate-${key}`);
-                    if (rateEl) {
-                        const decimals = (key === 'JPY' || key === 'KRW') ? 4 : 3;
-                        rateEl.textContent = fxRates[key].toFixed(decimals);
-                    }
-                }
-                const now = new Date();
-                document.getElementById('fx-update-time').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 更新`;
-                calculateFX();
-            }
-        }
-
-        function selectCurrency(curr) {
-            selectedCurr = curr;
-            document.querySelectorAll('.fx-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(`item-${curr}`).classList.add('active');
-            calculateFX();
-        }
-
-        function toggleDirection() {
-            isForeignToHkd = !isForeignToHkd;
-            calculateFX();
-        }
-
-        function calculateFX() {
-            const amount = parseFloat(document.getElementById('fx-amount').value) || 0;
-            const rate = fxRates[selectedCurr];
-            const dirLabel = document.getElementById('fx-dir-label');
-            const resultEl = document.getElementById('fx-result');
-
-            if (isForeignToHkd) {
-                dirLabel.textContent = `${selectedCurr} ➜ HKD`;
-                const totalHKD = amount * rate;
-                resultEl.textContent = `$${totalHKD.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} HKD`;
-            } else {
-                dirLabel.textContent = `HKD ➜ ${selectedCurr}`;
-                const totalForeign = amount / rate;
-                resultEl.textContent = `${totalForeign.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${selectedCurr}`;
-            }
-        }
-
-        // 初始化與定時器
-        updateTime();
-        updateLunarDate();
-        updateHolidayCountdown();
-        fetchWeather();
-        fetchHSI();
-        fetchFX();
-
-        setInterval(updateTime, 1000);
-        setInterval(fetchWeather, 600000);
-        setInterval(fetchHSI, 60000);
-        setInterval(fetchFX, 1800000);
-    </script>
-</body>
-</html>
+                    // 強力熱帶氣旋 (風球) 判斷
+                    if (jsonStr.includes('WTC') || jsonStr.includes('TC1') || jsonStr.includes('一號') || jsonStr.includes('戒備')) {
+                        let tcText = '🌀 一號戒備信號';
+                        if (jsonStr.includes('TC3') || jsonStr.includes('三號')) tcText = '🌀 三號強風信號';
+                        else if (jsonStr.includes('TC8') || jsonStr.includes('八號')) tcText = '🌀 八號烈風或暴風信號';
+                        else if (jsonStr.includes('TC9') || jsonStr.includes('九號')) tcText = '🌀 九號烈風或暴風風力增強信號';
+                        else if (jsonStr.includes('TC10') || jsonStr.includes('十號')) tcText = '🌀 十號颶風信號';
+                        
+                        alertHtml += `<span class="weather-alert alert-typhoon">${
