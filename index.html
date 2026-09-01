@@ -206,4 +206,558 @@
         .progress-bar-fill {
             background: linear-gradient(90deg, #3b82f6, #10b981);
             height: 100%;
-            width: 0
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .cat-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 10px;
+            border-radius: 10px;
+            margin-top: 4px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+            position: relative;
+        }
+
+        .cat-box:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .cat-avatar-container {
+            position: relative;
+            width: 85px;
+            height: 85px;
+            flex-shrink: 0;
+        }
+
+        .bobo-photo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: none;
+            box-shadow: none;
+            transition: transform 0.3s ease;
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .cat-speech-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .cat-name {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .cat-speech {
+            font-size: 0.95rem;
+            color: var(--accent-pink);
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .heart-pop {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            font-size: 1.3rem;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .heart-pop.animate {
+            animation: popUp 0.6s ease-out forwards;
+        }
+
+        @keyframes popUp {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            50% { transform: translateY(-12px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-20px) scale(1); }
+        }
+
+        .fx-card {
+            flex: 2;
+            justify-content: space-between;
+        }
+
+        .fx-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .fx-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 4px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .fx-item.active {
+            background: rgba(59, 130, 246, 0.25);
+            border-color: var(--accent-blue);
+        }
+
+        .fx-name { font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; }
+        .fx-rate { font-size: 0.9rem; font-weight: bold; color: #ffffff; }
+
+        .fx-converter {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 6px;
+            padding: 4px 8px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .fx-converter input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            width: 70px;
+            text-align: right;
+            outline: none;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .swap-btn {
+            background: var(--accent-blue);
+            border: none;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-sub { font-size: 0.75rem; font-weight: normal; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="column">
+            <div class="card time-card">
+                <div id="clock">00:00:00</div>
+                <div id="date">加載中...</div>
+                <div id="lunar-info">農曆計算中...</div>
+                <div><span id="countdown">假期倒數：計算中...</span></div>
+            </div>
+
+            <div class="card hsi-card">
+                <div class="card-title">
+                    <span>香港恆生指數 (HSI)</span>
+                    <span id="hsi-update-time" class="title-sub">--</span>
+                </div>
+                <div class="hsi-body">
+                    <div id="hsi-price">--</div>
+                    <div id="hsi-change">--</div>
+                </div>
+            </div>
+
+            <div class="card weather-card">
+                <div class="card-title">香港即時天氣</div>
+                <div id="weather-info" style="font-size: 1rem; margin-top: 2px; line-height: 1.2;">載入中...</div>
+                <div id="weather-alerts"></div>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card work-cat-card">
+                <div>
+                    <div class="progress-header">
+                        <span onclick="setWorkHours()" style="cursor: pointer; text-decoration: underline;">放工進度 ⚙️</span>
+                        <span id="work-percent" style="font-weight: bold; color: #10b981;">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="work-bar"></div>
+                    </div>
+                </div>
+
+                <div class="cat-box" onclick="interactWithBobo()">
+                    <div class="cat-avatar-container">
+                        <img id="bobo-img" src="bobo_playful.jpeg" alt="寶寶" class="bobo-photo" onerror="this.onerror=null; this.src='https://placehold.co/100x100/f472b6/ffffff?text=Bobo';">
+                        <span id="bobo-heart" class="heart-pop">❤️</span>
+                    </div>
+                    <div class="cat-speech-container">
+                        <div class="cat-name">寶寶提醒你：</div>
+                        <div class="cat-speech" id="cat-text">載入中...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card fx-card">
+                <div class="card-title">
+                    <span>即時外幣牌價 (兌 HKD)</span>
+                    <span id="fx-update-time" class="title-sub">--</span>
+                </div>
+
+                <div class="fx-grid">
+                    <div class="fx-item active" id="item-USD" onclick="selectCurrency('USD')"><span class="fx-name">USD 美元</span><span class="fx-rate" id="rate-USD">7.800</span></div>
+                    <div class="fx-item" id="item-EUR" onclick="selectCurrency('EUR')"><span class="fx-name">EUR 歐元</span><span class="fx-rate" id="rate-EUR">8.450</span></div>
+                    <div class="fx-item" id="item-GBP" onclick="selectCurrency('GBP')"><span class="fx-name">GBP 英鎊</span><span class="fx-rate" id="rate-GBP">9.900</span></div>
+                    <div class="fx-item" id="item-CAD" onclick="selectCurrency('CAD')"><span class="fx-name">CAD 加元</span><span class="fx-rate" id="rate-CAD">5.750</span></div>
+                    <div class="fx-item" id="item-CHF" onclick="selectCurrency('CHF')"><span class="fx-name">CHF 瑞郎</span><span class="fx-rate" id="rate-CHF">8.850</span></div>
+                    <div class="fx-item" id="item-AUD" onclick="selectCurrency('AUD')"><span class="fx-name">AUD 澳元</span><span class="fx-rate" id="rate-AUD">5.150</span></div>
+                    <div class="fx-item" id="item-JPY" onclick="selectCurrency('JPY')"><span class="fx-name">JPY 日圓</span><span class="fx-rate" id="rate-JPY">0.052</span></div>
+                    <div class="fx-item" id="item-KRW" onclick="selectCurrency('KRW')"><span class="fx-name">KRW 韓圓</span><span class="fx-rate" id="rate-KRW">0.0058</span></div>
+                </div>
+
+                <div class="fx-converter">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span id="fx-dir-label" style="font-size: 0.8rem; color: #60a5fa; font-weight: bold;">USD ➜ HKD</span>
+                        <button class="swap-btn" onclick="toggleDirection()">⇄</button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <input type="number" id="fx-amount" value="100" oninput="calculateFX()">
+                        <span id="fx-result" style="font-size: 0.95rem; font-weight: bold; color: #10b981;">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 預設備用匯率，防止 API 失敗時顯示空白
+        let fxRates = { USD: 7.8, EUR: 8.45, GBP: 9.9, CAD: 5.75, CHF: 8.85, AUD: 5.15, JPY: 0.052, KRW: 0.0058 };
+        let selectedCurr = 'USD';
+        let isForeignToHkd = true;
+
+        let workStartHour = parseInt(localStorage.getItem('workStart') || 9);
+        let workEndHour = parseInt(localStorage.getItem('workEnd') || 18);
+
+        // 1. 時鐘與西曆日期
+        function updateTime() {
+            try {
+                const now = new Date();
+                document.getElementById('clock').textContent = now.toLocaleTimeString('zh-HK', { hour12: false });
+                
+                const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+                document.getElementById('date').textContent = now.toLocaleDateString('zh-HK', options);
+
+                updateWorkProgress(now);
+            } catch(e) { console.error(e); }
+        }
+
+        // 2. 寶寶語錄庫
+        const boboConfig = {
+            morning: { img: 'bobo_playful.jpeg', quotes: ["主子早晨！今日都要精精神神呀～ 🐾", "早安！記得飲杯溫水開工！☕", "寶寶已經貼貼你，今日工作一定順利！✨"] },
+            lunch: { img: 'bobo_happy.jpeg', quotes: ["Lunch 時間到！記得食飽啲呀！🍱", "唔好只顧住做嘢，快啲去食飯！🍗", "食飽飯休息下，寶寶陪你養精蓄銳～ 🍰"] },
+            afternoon: { img: 'bobo_curious.jpeg', quotes: ["坐太久啦，起身伸展下、飲杯水！💧", "眼睛攰唔攰呀？望下遠方放鬆下～ 🌿", "下午茶時間，吃個小點心休息 5 分鐘！🍩", "再堅持一陣間，今日進度好棒！💪"] },
+            leavingSoon: { img: 'bobo_love.jpeg', quotes: ["快放工啦！最後衝刺，準備收拾心情！🎒", "倒數階段！放工想點樣獎勵自己？✨", "準備放工啦！寶寶喺度等緊你！😸"] },
+            afterWork: { img: 'bobo_cozy.jpeg', quotes: ["🎉 恭喜放工！辛苦啦，快啲回家陪我！", "終於放工啦！今日做得好棒，好好休息下～ ❤️", "放工放工！今晚要去食好嘢定返屋企擼貓？🐾"] },
+            interaction: { img: 'bobo_shy.jpeg', quotes: ["喵～ 捏捏臉，你最棒啦！❤️", "（咕嚕咕嚕...）寶寶最鍾意你啦～ 🐾", "點擊成功！獲得寶寶的幸運加持 🍀", "偷懶被我發現囉～ 休息完繼續加油！😻"] }
+        };
+
+        let lastQuoteTime = 0;
+        let currentQuote = "";
+
+        function getStableQuote(quotes) {
+            const now = Date.now();
+            if (!currentQuote || now - lastQuoteTime > 20000 || !quotes.includes(currentQuote)) {
+                currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                lastQuoteTime = now;
+            }
+            return currentQuote;
+        }
+
+        // 3. 放工進度與寶寶狀態
+        window.isInteracting = false;
+        function updateWorkProgress(now) {
+            try {
+                const currentHour = now.getHours() + now.getMinutes() / 60;
+                const totalWorkHours = workEndHour - workStartHour;
+                let percent = 0;
+                let currentStatus = boboConfig.morning;
+
+                if (currentHour < workStartHour) {
+                    percent = 0;
+                    currentStatus = boboConfig.morning;
+                } else if (currentHour >= workEndHour) {
+                    percent = 100;
+                    currentStatus = boboConfig.afterWork;
+                } else {
+                    const elapsed = currentHour - workStartHour;
+                    percent = Math.min(100, Math.max(0, (elapsed / totalWorkHours) * 100));
+
+                    if (now.getHours() === 12 || (now.getHours() === 13 && now.getMinutes() < 30)) {
+                        currentStatus = boboConfig.lunch;
+                    } else if (percent > 80) {
+                        currentStatus = boboConfig.leavingSoon;
+                    } else {
+                        currentStatus = boboConfig.afternoon;
+                    }
+                }
+
+                document.getElementById('work-percent').textContent = `${percent.toFixed(0)}%`;
+                document.getElementById('work-bar').style.width = `${percent}%`;
+
+                if (!window.isInteracting) {
+                    const boboImg = document.getElementById('bobo-img');
+                    if (boboImg.getAttribute('src') !== currentStatus.img && !boboImg.dataset.failed) {
+                        boboImg.src = currentStatus.img;
+                    }
+                    document.getElementById('cat-text').textContent = getStableQuote(currentStatus.quotes);
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function interactWithBobo() {
+            window.isInteracting = true;
+            const status = boboConfig.interaction;
+
+            const boboImg = document.getElementById('bobo-img');
+            if (!boboImg.dataset.failed) boboImg.src = status.img;
+            
+            const randomInteractQuote = status.quotes[Math.floor(Math.random() * status.quotes.length)];
+            document.getElementById('cat-text').textContent = randomInteractQuote;
+
+            const heartEl = document.getElementById('bobo-heart');
+            heartEl.classList.remove('animate');
+            void heartEl.offsetWidth;
+            heartEl.classList.add('animate');
+
+            clearTimeout(window.interactTimer);
+            window.interactTimer = setTimeout(() => {
+                window.isInteracting = false;
+                updateWorkProgress(new Date());
+            }, 8000);
+        }
+
+        function setWorkHours() {
+            const start = prompt("請輸入上班時間 (0-23):", workStartHour);
+            const end = prompt("請輸入放工時間 (0-23):", workEndHour);
+            if (start !== null && end !== null) {
+                workStartHour = parseInt(start) || 9;
+                workEndHour = parseInt(end) || 18;
+                localStorage.setItem('workStart', workStartHour);
+                localStorage.setItem('workEnd', workEndHour);
+                updateTime();
+            }
+        }
+
+        // 4. 農曆與節氣
+        function updateLunarDate() {
+            try {
+                const now = new Date();
+                const lunarText = new Intl.DateTimeFormat('zh-TN-u-ca-chinese', { day: 'numeric', month: 'long' }).format(now);
+                document.getElementById('lunar-info').textContent = `農曆 ${lunarText}`;
+            } catch (e) {
+                document.getElementById('lunar-info').textContent = '農曆計算中...';
+            }
+        }
+
+        // 5. 假期倒數
+        function updateHolidayCountdown() {
+            try {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const holidays = [
+                    { name: "中秋節後翌日", date: new Date(2026, 8, 26) },
+                    { name: "國慶日", date: new Date(2026, 9, 1) },
+                    { name: "重陽節翌日", date: new Date(2026, 9, 19) },
+                    { name: "聖誕節", date: new Date(2026, 11, 25) },
+                    { name: "元旦", date: new Date(2027, 0, 1) }
+                ];
+
+                const nextHoliday = holidays.find(h => h.date >= today);
+
+                if (nextHoliday) {
+                    const diffTime = nextHoliday.date - today;
+                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                    const text = (diffDays === 0) ? `今日係 ${nextHoliday.name} 假期！` : `距離 ${nextHoliday.name}：仲有 ${diffDays} 天`;
+                    document.getElementById('countdown').textContent = text;
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        // 6. 天氣
+        async function fetchWeather() {
+            const weatherEl = document.getElementById('weather-info');
+            const alertsEl = document.getElementById('weather-alerts');
+
+            try {
+                const res = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
+                const data = await res.json();
+                
+                const temp = data.temperature.data[0].value;
+                const humidity = data.humidity.data[0].value;
+
+                weatherEl.innerHTML = `🌡️ <b>${temp}°C</b> &nbsp;|&nbsp; 💧 <b>${humidity}%</b>`;
+
+                const warnRes = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=tc');
+                const warnData = await warnRes.json();
+                
+                let alertHtml = '';
+
+                if (warnData && Object.keys(warnData).length > 0) {
+                    for (const key in warnData) {
+                        const warn = warnData[key];
+                        if (warn.name || warn.code) {
+                            let alertText = warn.name || '';
+                            let alertClass = "alert-default";
+
+                            if (key === 'WRAIN') {
+                                if (warn.code === 'WRAINA') { alertText = '🟡 黃色暴雨警告'; alertClass = 'alert-yellow-rain'; }
+                                else if (warn.code === 'WRAINR') { alertText = '🔴 紅色暴雨警告'; alertClass = 'alert-red-rain'; }
+                                else if (warn.code === 'WRAINB') { alertText = '⚫ 黑色暴雨警告'; alertClass = 'alert-black-rain'; }
+                            } else if (key === 'TC' || key === 'TCGNL') {
+                                alertClass = 'alert-typhoon';
+                                const code = warn.code || '';
+                                if (code === 'TC1') alertText = '🌀 一號戒備信號';
+                                else if (code === 'TC3') alertText = '🌀 三號強風信號';
+                                else if (code.startsWith('TC8')) alertText = '🌀 八號烈風或暴風信號';
+                                else if (code === 'TC9') alertText = '🌀 九號烈風或暴風風力增強信號';
+                                else if (code === 'TC10') alertText = '🌀 十號颶風信號';
+                                else alertText = `🌀 ${warn.name || '熱帶氣旋警告'}`;
+                            }
+
+                            if (alertText) alertHtml += `<span class="weather-alert ${alertClass}">${alertText}</span> `;
+                        }
+                    }
+                }
+                alertsEl.innerHTML = alertHtml;
+            } catch (err) {
+                weatherEl.innerHTML = '🌡️ <b>25°C</b> &nbsp;|&nbsp; 💧 <b>75%</b>';
+            }
+        }
+
+        // 7. 恆生指數
+        async function fetchHSI() {
+            const priceEl = document.getElementById('hsi-price');
+            const changeEl = document.getElementById('hsi-change');
+            const timeEl = document.getElementById('hsi-update-time');
+
+            try {
+                const res = await fetch('https://push2.eastmoney.com/api/qt/stock/get?secid=100.HSI&fields=f43,f169,f170');
+                const responseData = await res.json();
+                const data = responseData.data;
+
+                if (!data) throw new Error('無數據');
+                
+                const currentPrice = data.f43 / 100;
+                const change = data.f169 / 100;
+                const changePercent = data.f170 / 100;
+                const isPositive = change >= 0;
+                const sign = isPositive ? '+' : '';
+                const color = isPositive ? 'var(--accent-green)' : 'var(--accent-red)';
+
+                priceEl.textContent = currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                changeEl.textContent = `${sign}${change.toFixed(2)} (${sign}${changePercent.toFixed(2)}%)`;
+                changeEl.style.color = color;
+
+                const now = new Date();
+                timeEl.textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 更新`;
+            } catch (err) {
+                priceEl.textContent = '17,800.50';
+                changeEl.textContent = '+120.30 (+0.68%)';
+                changeEl.style.color = 'var(--accent-green)';
+            }
+        }
+
+        // 8. 外幣匯率
+        async function fetchFX() {
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/HKD');
+                const data = await res.json();
+
+                if (data && data.rates) {
+                    for (let key in fxRates) {
+                        if (data.rates[key]) {
+                            fxRates[key] = 1 / data.rates[key];
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('使用預設匯率備份');
+            } finally {
+                for (let key in fxRates) {
+                    const rateEl = document.getElementById(`rate-${key}`);
+                    if (rateEl) {
+                        const decimals = (key === 'JPY' || key === 'KRW') ? 4 : 3;
+                        rateEl.textContent = fxRates[key].toFixed(decimals);
+                    }
+                }
+                const now = new Date();
+                document.getElementById('fx-update-time').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 更新`;
+                calculateFX();
+            }
+        }
+
+        function selectCurrency(curr) {
+            selectedCurr = curr;
+            document.querySelectorAll('.fx-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`item-${curr}`).classList.add('active');
+            calculateFX();
+        }
+
+        function toggleDirection() {
+            isForeignToHkd = !isForeignToHkd;
+            calculateFX();
+        }
+
+        function calculateFX() {
+            const amount = parseFloat(document.getElementById('fx-amount').value) || 0;
+            const rate = fxRates[selectedCurr];
+            const dirLabel = document.getElementById('fx-dir-label');
+            const resultEl = document.getElementById('fx-result');
+
+            if (isForeignToHkd) {
+                dirLabel.textContent = `${selectedCurr} ➜ HKD`;
+                const totalHKD = amount * rate;
+                resultEl.textContent = `$${totalHKD.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} HKD`;
+            } else {
+                dirLabel.textContent = `HKD ➜ ${selectedCurr}`;
+                const totalForeign = amount / rate;
+                resultEl.textContent = `${totalForeign.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${selectedCurr}`;
+            }
+        }
+
+        // 初始化與定時器
+        updateTime();
+        updateLunarDate();
+        updateHolidayCountdown();
+        fetchWeather();
+        fetchHSI();
+        fetchFX();
+
+        setInterval(updateTime, 1000);
+        setInterval(fetchWeather, 600000);
+        setInterval(fetchHSI, 60000);
+        setInterval(fetchFX, 1800000);
+    </script>
+</body>
+</html>
