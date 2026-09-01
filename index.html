@@ -69,13 +69,13 @@
 
         /* 1. 時鐘卡片 */
         .time-card {
-            flex: 1;
+            flex: 0.9;
             text-align: center;
             background: linear-gradient(135deg, rgba(28, 37, 65, 0.9), rgba(11, 19, 43, 0.9));
         }
 
         #clock {
-            font-size: 2.2rem;
+            font-size: 2.1rem;
             font-weight: 800;
             letter-spacing: 1px;
             line-height: 1.1;
@@ -95,8 +95,8 @@
             font-weight: 600;
         }
 
-        /* 2. 放假倒數儀表板 */
-        .countdown-card { flex: 1.2; }
+        /* 2. 精簡版倒數儀表板（高度縮小） */
+        .countdown-card { flex: 0.8; }
 
         .cd-grid {
             display: grid;
@@ -109,42 +109,56 @@
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 6px;
-            padding: 6px;
+            padding: 3px 6px;
             text-align: center;
         }
 
-        .cd-title { font-size: 0.75rem; color: var(--text-secondary); }
-        .cd-value { font-size: 1rem; font-weight: bold; color: var(--accent-warn); margin-top: 2px; }
+        .cd-title { font-size: 0.7rem; color: var(--text-secondary); }
+        .cd-value { font-size: 0.88rem; font-weight: bold; color: var(--accent-warn); margin-top: 1px; }
 
-        /* 3. 擴充版詳細天氣卡片 */
+        /* 3. 放大版天氣卡片 */
         .weather-card {
-            flex: 1.6;
+            flex: 2.1;
             cursor: pointer;
             position: relative;
+            justify-content: space-between;
         }
 
         .weather-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 4px;
-            margin-top: 4px;
-            font-size: 0.85rem;
+            gap: 6px;
+            margin-top: 6px;
         }
 
         .weather-item {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 4px 6px;
-            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 10px;
+            border-radius: 8px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
+        }
+
+        .weather-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .weather-val {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #ffffff;
         }
 
         .weather-alert {
             display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            margin-top: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 6px;
             font-weight: 800;
         }
 
@@ -159,19 +173,19 @@
             display: none;
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(11, 19, 43, 0.95);
+            background: rgba(11, 19, 43, 0.96);
             border-radius: 10px;
-            padding: 8px;
+            padding: 10px;
             overflow-y: auto;
             z-index: 10;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
         }
 
         .forecast-row {
             display: flex;
             justify-content: space-between;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding: 3px 0;
+            padding: 4px 0;
         }
 
         /* 4. 大版面寶寶提醒卡片 */
@@ -258,335 +272,4 @@
         }
 
         .fx-converter {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 6px;
-            padding: 4px 8px;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .fx-converter input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            width: 70px;
-            text-align: right;
-            outline: none;
-        }
-
-        .card-title {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: var(--text-secondary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .title-sub { font-size: 0.75rem; font-weight: normal; color: var(--text-secondary); }
-    </style>
-</head>
-<body>
-
-    <div class="dashboard-container">
-        <div class="column">
-            <div class="card time-card">
-                <div id="clock">00:00:00</div>
-                <div id="date">加載中...</div>
-                <div id="lunar-info">農曆計算中...</div>
-            </div>
-
-            <div class="card countdown-card">
-                <div class="card-title">
-                    <span>放工 / 放假倒數儀表板 ⏳</span>
-                </div>
-                <div class="cd-grid">
-                    <div class="cd-box">
-                        <div class="cd-title">距離今日放工</div>
-                        <div class="cd-value" id="cd-work">00:00:00</div>
-                    </div>
-                    <div class="cd-box">
-                        <div class="cd-title">距離週末 (Sat)</div>
-                        <div class="cd-value" id="cd-weekend">-- 天</div>
-                    </div>
-                </div>
-                <div class="cd-box" style="margin-top: 4px;">
-                    <div class="cd-title" id="holiday-name">距離下個假期</div>
-                    <div class="cd-value" id="cd-holiday" style="color: var(--accent-green);">計算中...</div>
-                </div>
-            </div>
-
-            <div class="card weather-card" onclick="toggleForecast()">
-                <div class="card-title">
-                    <span>詳細天氣與空氣質素 🌤️</span>
-                    <span class="title-sub">點擊睇 9 天預報</span>
-                </div>
-                <div class="weather-grid">
-                    <div class="weather-item"><span>🌡️ 氣溫</span><b id="wt-temp">--°C</b></div>
-                    <div class="weather-item"><span>💧 濕度</span><b id="wt-humidity">--%</b></div>
-                    <div class="weather-item"><span>☀️ 紫外線</span><b id="wt-uv">--</b></div>
-                    <div class="weather-item"><span>🍃 AQHI</span><b id="wt-aqhi">--</b></div>
-                </div>
-                <div id="weather-alerts"></div>
-
-                <div class="forecast-modal" id="forecast-box">
-                    <div style="font-weight: bold; margin-bottom: 4px; color: var(--accent-blue);">未來 9 天天氣預報 (點擊關閉)</div>
-                    <div id="forecast-list">載入中...</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="column">
-            <div class="card work-cat-card">
-                <div class="cat-box" onclick="interactWithBobo()">
-                    <div class="cat-avatar-container">
-                        <img id="bobo-img" src="bobo_playful.jpeg" alt="寶寶" class="bobo-photo" onerror="this.onerror=null; this.src='https://placehold.co/120x120/f472b6/ffffff?text=Bobo';">
-                    </div>
-                    <div class="cat-speech-container">
-                        <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: bold;">🐾 寶寶提醒你：</div>
-                        <div class="cat-speech" id="cat-text">載入中...</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card fx-card">
-                <div class="card-title">
-                    <span>即時外幣牌價 (兌 HKD)</span>
-                    <span id="fx-update-time" class="title-sub">--</span>
-                </div>
-
-                <div class="fx-grid">
-                    <div class="fx-item active" id="item-USD" onclick="selectCurrency('USD')"><span style="font-size: 0.8rem; color: var(--text-secondary);">USD 美元</span><span id="rate-USD" style="font-weight: bold;">7.800</span></div>
-                    <div class="fx-item" id="item-EUR" onclick="selectCurrency('EUR')"><span style="font-size: 0.8rem; color: var(--text-secondary);">EUR 歐元</span><span id="rate-EUR">8.450</span></div>
-                    <div class="fx-item" id="item-GBP" onclick="selectCurrency('GBP')"><span style="font-size: 0.8rem; color: var(--text-secondary);">GBP 英鎊</span><span id="rate-GBP">9.900</span></div>
-                    <div class="fx-item" id="item-CAD" onclick="selectCurrency('CAD')"><span style="font-size: 0.8rem; color: var(--text-secondary);">CAD 加元</span><span id="rate-CAD">5.750</span></div>
-                    <div class="fx-item" id="item-CHF" onclick="selectCurrency('CHF')"><span style="font-size: 0.8rem; color: var(--text-secondary);">CHF 瑞郎</span><span id="rate-CHF">8.850</span></div>
-                    <div class="fx-item" id="item-AUD" onclick="selectCurrency('AUD')"><span style="font-size: 0.8rem; color: var(--text-secondary);">AUD 澳元</span><span id="rate-AUD">5.150</span></div>
-                    <div class="fx-item" id="item-JPY" onclick="selectCurrency('JPY')"><span style="font-size: 0.8rem; color: var(--text-secondary);">JPY 日圓</span><span id="rate-JPY">0.052</span></div>
-                    <div class="fx-item" id="item-KRW" onclick="selectCurrency('KRW')"><span style="font-size: 0.8rem; color: var(--text-secondary);">KRW 韓圓</span><span id="rate-KRW">0.0058</span></div>
-                </div>
-
-                <div class="fx-converter">
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <span id="fx-dir-label" style="font-size: 0.8rem; color: #60a5fa; font-weight: bold;">USD ➜ HKD</span>
-                        <button onclick="toggleDirection()" style="background: var(--accent-blue); border: none; color: white; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">⇄</button>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <input type="number" id="fx-amount" value="100" oninput="calculateFX()">
-                        <span id="fx-result" style="font-size: 0.95rem; font-weight: bold; color: #10b981;">--</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let fxRates = { USD: 7.8, EUR: 8.45, GBP: 9.9, CAD: 5.75, CHF: 8.85, AUD: 5.15, JPY: 0.052, KRW: 0.0058 };
-        let selectedCurr = 'USD';
-        let isForeignToHkd = true;
-
-        let workEndHour = parseInt(localStorage.getItem('workEnd') || 18);
-
-        // 1. 時間與倒數邏輯
-        function updateTime() {
-            try {
-                const now = new Date();
-                document.getElementById('clock').textContent = now.toLocaleTimeString('zh-HK', { hour12: false });
-                const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-                document.getElementById('date').textContent = now.toLocaleDateString('zh-HK', options);
-                
-                updateCountdowns(now);
-                updateBoboState(now);
-            } catch(e) { console.error("Time Error:", e); }
-        }
-
-        function updateCountdowns(now) {
-            // 放工時分秒倒數
-            const targetWork = new Date(now);
-            targetWork.setHours(workEndHour, 0, 0, 0);
-            
-            if (now >= targetWork) {
-                document.getElementById('cd-work').textContent = "已放工！🎉";
-                document.getElementById('cd-work').style.color = "var(--accent-green)";
-            } else {
-                const diffMs = targetWork - now;
-                const hrs = String(Math.floor(diffMs / 3600000)).padStart(2, '0');
-                const mins = String(Math.floor((diffMs % 3600000) / 60000)).padStart(2, '0');
-                const secs = String(Math.floor((diffMs % 60000) / 1000)).padStart(2, '0');
-                document.getElementById('cd-work').textContent = `${hrs}:${mins}:${secs}`;
-                document.getElementById('cd-work').style.color = "var(--accent-warn)";
-            }
-
-            // 週末倒數
-            const dayOfWeek = now.getDay();
-            let daysToSat = 6 - dayOfWeek;
-            if (dayOfWeek === 0) daysToSat = 0;
-            document.getElementById('cd-weekend').textContent = (dayOfWeek === 6 || dayOfWeek === 0) ? "放緊假 🥳" : `仲有 ${daysToSat} 天`;
-
-            // 公眾假期倒數
-            const holidays = [
-                { name: "中秋節後翌日", date: new Date(2026, 8, 26) },
-                { name: "國慶日", date: new Date(2026, 9, 1) },
-                { name: "重陽節翌日", date: new Date(2026, 9, 19) },
-                { name: "聖誕節", date: new Date(2026, 11, 25) },
-                { name: "元旦", date: new Date(2027, 0, 1) }
-            ];
-            const todayReset = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            const nextH = holidays.find(h => h.date >= todayReset);
-            if (nextH) {
-                const diffDays = Math.round((nextH.date - todayReset) / (1000 * 60 * 60 * 24));
-                document.getElementById('holiday-name').textContent = `距離 ${nextH.name}`;
-                document.getElementById('cd-holiday').textContent = (diffDays === 0) ? `今日假期！` : `仲有 ${diffDays} 天`;
-            }
-        }
-
-        // 2. 寶寶狀態與對話
-        const boboConfig = {
-            morning: { img: 'bobo_playful.jpeg', quotes: ["主子早晨！今日都要精精神神呀～ 🐾", "早安！記得飲杯溫水開工！☕"] },
-            lunch: { img: 'bobo_happy.jpeg', quotes: ["Lunch 時間到！記得食飽啲呀！🍱", "快啲去食飯，寶寶陪你養精蓄銳～ 🍰"] },
-            afternoon: { img: 'bobo_curious.jpeg', quotes: ["坐太久啦，起身伸展下！💧", "眼睛攰唔攰呀？望下遠方放鬆下～ 🌿"] },
-            leavingSoon: { img: 'bobo_love.jpeg', quotes: ["快放工啦！最後衝刺！🎒", "準備放工啦！寶寶喺度等緊你！😸"] },
-            afterWork: { img: 'bobo_cozy.jpeg', quotes: ["🎉 恭喜放工！辛苦啦，快啲回家陪我！", "終於放工啦！今晚食好嘢！❤️"] },
-            interaction: { img: 'bobo_shy.jpeg', quotes: ["喵～ 捏捏臉，你最棒啦！❤️", "（咕嚕咕嚕...）寶寶最鍾意你啦～ 🐾"] }
-        };
-
-        function updateBoboState(now) {
-            const currentHour = now.getHours();
-            let currentStatus = boboConfig.morning;
-
-            if (currentHour < 12) currentStatus = boboConfig.morning;
-            else if (currentHour === 12 || (currentHour === 13 && now.getMinutes() < 30)) currentStatus = boboConfig.lunch;
-            else if (currentHour < workEndHour - 1) currentStatus = boboConfig.afternoon;
-            else if (currentHour < workEndHour) currentStatus = boboConfig.leavingSoon;
-            else currentStatus = boboConfig.afterWork;
-
-            if (!window.isInteracting) {
-                const boboImg = document.getElementById('bobo-img');
-                if (boboImg && boboImg.getAttribute('src') !== currentStatus.img) boboImg.src = currentStatus.img;
-                document.getElementById('cat-text').textContent = currentStatus.quotes[0];
-            }
-        }
-
-        function interactWithBobo() {
-            window.isInteracting = true;
-            document.getElementById('bobo-img').src = boboConfig.interaction.img;
-            document.getElementById('cat-text').textContent = boboConfig.interaction.quotes[Math.floor(Math.random() * boboConfig.interaction.quotes.length)];
-            clearTimeout(window.interactTimer);
-            window.interactTimer = setTimeout(() => { window.isInteracting = false; updateTime(); }, 6000);
-        }
-
-        // 3. 農曆
-        function updateLunarDate() {
-            try {
-                const now = new Date();
-                const lunarText = new Intl.DateTimeFormat('zh-TN-u-ca-chinese', { day: 'numeric', month: 'long' }).format(now);
-                document.getElementById('lunar-info').textContent = `農曆 ${lunarText}`;
-            } catch (e) { document.getElementById('lunar-info').textContent = '農曆計算中...'; }
-        }
-
-        // 4. 天氣與 AQHI 解析
-        async function fetchWeather() {
-            try {
-                const res = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
-                const data = await res.json();
-                
-                if (data.temperature) document.getElementById('wt-temp').textContent = `${data.temperature.data[0].value}°C`;
-                if (data.humidity) document.getElementById('wt-humidity').textContent = `${data.humidity.data[0].value}%`;
-                if (data.uvindex) document.getElementById('wt-uv').textContent = `${data.uvindex.data[0].value}`;
-                else document.getElementById('wt-uv').textContent = "低";
-
-                let alertHtml = '';
-                if (data.warningMessage && Array.isArray(data.warningMessage)) {
-                    const warnText = data.warningMessage.join(' ');
-                    if (warnText.includes('一號') || warnText.includes('TC1')) alertHtml += `<span class="weather-alert alert-typhoon">🌀 一號戒備信號</span> `;
-                    else if (warnText.includes('三號') || warnText.includes('TC3')) alertHtml += `<span class="weather-alert alert-typhoon">🌀 三號強風信號</span> `;
-                    else if (warnText.includes('八號')) alertHtml += `<span class="weather-alert alert-typhoon">🌀 八號烈風/暴風信號</span> `;
-                }
-                document.getElementById('weather-alerts').innerHTML = alertHtml;
-            } catch(e) { console.error(e); }
-
-            try {
-                const aqRes = await fetch('https://expdb.epd.gov.hk/aqhi/json/aqhi_ind_tc.json');
-                const aqData = await aqRes.json();
-                if (aqData && aqData[0]) document.getElementById('wt-aqhi').textContent = `${aqData[0].aqhi} (${aqData[0].health_risk})`;
-            } catch(e) { document.getElementById('wt-aqhi').textContent = "2 (低)"; }
-
-            try {
-                const fRes = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=tc');
-                const fData = await fRes.json();
-                if (fData.weatherForecast) {
-                    let html = '';
-                    fData.weatherForecast.forEach(day => {
-                        const dateStr = `${day.forecastDate.substring(4,6)}/${day.forecastDate.substring(6,8)} (${day.week})`;
-                        html += `<div class="forecast-row"><span>${dateStr}</span><span>${day.forecastMintemp.value}-${day.forecastMaxtemp.value}°C</span><span>${day.forecastForecast}</span></div>`;
-                    });
-                    document.getElementById('forecast-list').innerHTML = html;
-                }
-            } catch(e) { document.getElementById('forecast-list').textContent = "未能加載預報"; }
-        }
-
-        function toggleForecast() {
-            const box = document.getElementById('forecast-box');
-            box.style.display = (box.style.display === 'block') ? 'none' : 'block';
-        }
-
-        // 5. 外幣牌價
-        async function fetchFX() {
-            try {
-                const res = await fetch('https://open.er-api.com/v6/latest/HKD');
-                const data = await res.json();
-                if (data && data.rates) {
-                    for (let key in fxRates) { if (data.rates[key]) fxRates[key] = 1 / data.rates[key]; }
-                }
-            } catch (err) {}
-            finally {
-                for (let key in fxRates) {
-                    const rateEl = document.getElementById(`rate-${key}`);
-                    if (rateEl) rateEl.textContent = fxRates[key].toFixed((key==='JPY'||key==='KRW')?4:3);
-                }
-                const now = new Date();
-                document.getElementById('fx-update-time').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 更新`;
-                calculateFX();
-            }
-        }
-
-        function selectCurrency(curr) {
-            selectedCurr = curr;
-            document.querySelectorAll('.fx-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(`item-${curr}`).classList.add('active');
-            calculateFX();
-        }
-
-        function toggleDirection() { isForeignToHkd = !isForeignToHkd; calculateFX(); }
-
-        function calculateFX() {
-            const amount = parseFloat(document.getElementById('fx-amount').value) || 0;
-            const rate = fxRates[selectedCurr];
-            const dirLabel = document.getElementById('fx-dir-label');
-            const resultEl = document.getElementById('fx-result');
-            if (isForeignToHkd) {
-                dirLabel.textContent = `${selectedCurr} ➜ HKD`;
-                resultEl.textContent = `$${(amount * rate).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} HKD`;
-            } else {
-                dirLabel.textContent = `HKD ➜ ${selectedCurr}`;
-                resultEl.textContent = `${(amount / rate).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${selectedCurr}`;
-            }
-        }
-
-        // 初始化執行
-        updateTime();
-        updateLunarDate();
-        fetchWeather();
-        fetchFX();
-
-        setInterval(updateTime, 1000);
-        setInterval(fetchWeather, 300000);
-        setInterval(fetchFX, 1800000);
-    </script>
-</body>
-</html>
+            background: rgba(0, 0, 0,
