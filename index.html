@@ -67,14 +67,15 @@
             justify-content: center;
         }
 
+        /* 1. 時鐘卡片 */
         .time-card {
-            flex: 1.1;
+            flex: 1;
             text-align: center;
             background: linear-gradient(135deg, rgba(28, 37, 65, 0.9), rgba(11, 19, 43, 0.9));
         }
 
         #clock {
-            font-size: 2.3rem;
+            font-size: 2.2rem;
             font-weight: 800;
             letter-spacing: 1px;
             line-height: 1.1;
@@ -83,99 +84,97 @@
         }
 
         #date {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
             margin-top: 2px;
         }
 
         #lunar-info {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #60a5fa;
             font-weight: 600;
-            margin-top: 1px;
         }
 
-        #countdown {
+        /* 2. 放假倒數儀表板 */
+        .countdown-card { flex: 1.2; }
+
+        .cd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
             margin-top: 4px;
-            font-size: 0.8rem;
-            color: var(--accent-warn);
-            background: rgba(245, 158, 11, 0.15);
-            padding: 2px 6px;
-            border-radius: 6px;
-            display: inline-block;
         }
 
-        .weather-card { flex: 1; }
+        .cd-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .cd-title { font-size: 0.75rem; color: var(--text-secondary); }
+        .cd-value { font-size: 1rem; font-weight: bold; color: var(--accent-warn); margin-top: 2px; }
+
+        /* 3. 擴充版詳細天氣卡片 */
+        .weather-card {
+            flex: 1.6;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+            margin-top: 4px;
+            font-size: 0.85rem;
+        }
+
+        .weather-item {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 6px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
 
         .weather-alert {
             display: inline-block;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
             margin-top: 4px;
             font-weight: 800;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-
-        @keyframes alertPulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.04); opacity: 0.85; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .alert-yellow-rain {
-            background: #facc15;
-            color: #000000;
-            border: 1px solid #fde047;
-            animation: alertPulse 2s infinite ease-in-out;
-        }
-
-        .alert-red-rain {
-            background: #ef4444;
-            color: #ffffff;
-            border: 1px solid #fca5a5;
-            animation: alertPulse 1.2s infinite ease-in-out;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
-        }
-
-        .alert-black-rain {
-            background: #000000;
-            color: #ffffff;
-            border: 2px solid #ffffff;
-            animation: alertPulse 1s infinite ease-in-out;
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
         }
 
         .alert-typhoon {
             background: linear-gradient(135deg, #a855f7, #6366f1);
             color: #ffffff;
             border: 1px solid #c084fc;
-            animation: alertPulse 1.2s infinite ease-in-out;
-            box-shadow: 0 0 12px rgba(168, 85, 247, 0.7);
         }
 
-        .alert-default {
-            background: rgba(239, 68, 68, 0.25);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.5);
+        /* 9天天氣預報 Drawer */
+        .forecast-modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(11, 19, 43, 0.95);
+            border-radius: 10px;
+            padding: 8px;
+            overflow-y: auto;
+            z-index: 10;
+            font-size: 0.75rem;
         }
 
-        .hsi-card { flex: 1; }
-
-        .hsi-body {
+        .forecast-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 6px 10px;
-            border-radius: 8px;
-            margin-top: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 3px 0;
         }
 
-        #hsi-price { font-size: 1.35rem; font-weight: bold; }
-        #hsi-change { font-size: 0.9rem; font-weight: bold; }
-
+        /* 4. 工作與貓咪 */
         .work-cat-card {
             flex: 1.45;
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
@@ -198,7 +197,6 @@
             width: 100%;
             overflow: hidden;
             margin: 4px 0;
-            position: relative;
         }
 
         .progress-bar-fill {
@@ -218,13 +216,6 @@
             border-radius: 10px;
             margin-top: 4px;
             cursor: pointer;
-            transition: transform 0.2s ease, background 0.2s ease;
-            position: relative;
-        }
-
-        .cat-box:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
         }
 
         .cat-avatar-container {
@@ -239,24 +230,7 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: none;
-            box-shadow: none;
-            transition: transform 0.3s ease;
             background-color: rgba(255,255,255,0.1);
-        }
-
-        .cat-speech-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            flex: 1;
-        }
-
-        .cat-name {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            font-weight: bold;
-            margin-bottom: 2px;
         }
 
         .cat-speech {
@@ -266,25 +240,7 @@
             line-height: 1.35;
         }
 
-        .heart-pop {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            font-size: 1.3rem;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .heart-pop.animate {
-            animation: popUp 0.6s ease-out forwards;
-        }
-
-        @keyframes popUp {
-            0% { opacity: 1; transform: translateY(0) scale(0.8); }
-            50% { transform: translateY(-12px) scale(1.2); }
-            100% { opacity: 0; transform: translateY(-20px) scale(1); }
-        }
-
+        /* 5. 外幣牌價 */
         .fx-card {
             flex: 2;
             justify-content: space-between;
@@ -313,9 +269,6 @@
             border-color: var(--accent-blue);
         }
 
-        .fx-name { font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; }
-        .fx-rate { font-size: 0.9rem; font-weight: bold; color: #ffffff; }
-
         .fx-converter {
             background: rgba(0, 0, 0, 0.25);
             border-radius: 6px;
@@ -336,23 +289,10 @@
             width: 70px;
             text-align: right;
             outline: none;
-            -webkit-user-select: text;
-            user-select: text;
-        }
-
-        .swap-btn {
-            background: var(--accent-blue);
-            border: none;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: bold;
         }
 
         .card-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: bold;
             color: var(--text-secondary);
             display: flex;
@@ -371,24 +311,45 @@
                 <div id="clock">00:00:00</div>
                 <div id="date">加載中...</div>
                 <div id="lunar-info">農曆計算中...</div>
-                <div><span id="countdown">假期倒數：計算中...</span></div>
             </div>
 
-            <div class="card hsi-card">
+            <div class="card countdown-card">
                 <div class="card-title">
-                    <span>香港恆生指數 (HSI)</span>
-                    <span id="hsi-update-time" class="title-sub">--</span>
+                    <span>放工 / 放假倒數儀表板 ⏳</span>
                 </div>
-                <div class="hsi-body">
-                    <div id="hsi-price">--</div>
-                    <div id="hsi-change">--</div>
+                <div class="cd-grid">
+                    <div class="cd-box">
+                        <div class="cd-title">距離今日放工</div>
+                        <div class="cd-value" id="cd-work">00:00:00</div>
+                    </div>
+                    <div class="cd-box">
+                        <div class="cd-title">距離週末 (Sat)</div>
+                        <div class="cd-value" id="cd-weekend">-- 天</div>
+                    </div>
+                </div>
+                <div class="cd-box" style="margin-top: 4px;">
+                    <div class="cd-title" id="holiday-name">距離下個假期</div>
+                    <div class="cd-value" id="cd-holiday" style="color: var(--accent-green);">計算中...</div>
                 </div>
             </div>
 
-            <div class="card weather-card">
-                <div class="card-title">香港即時天氣</div>
-                <div id="weather-info" style="font-size: 1rem; margin-top: 2px; line-height: 1.2;">載入中...</div>
+            <div class="card weather-card" onclick="toggleForecast()">
+                <div class="card-title">
+                    <span>詳細天氣與空氣質素 🌤️</span>
+                    <span class="title-sub">點擊睇 9 天預報</span>
+                </div>
+                <div class="weather-grid">
+                    <div class="weather-item"><span>🌡️ 氣溫</span><b id="wt-temp">--°C</b></div>
+                    <div class="weather-item"><span>💧 濕度</span><b id="wt-humidity">--%</b></div>
+                    <div class="weather-item"><span>☀️ 紫外線</span><b id="wt-uv">--</b></div>
+                    <div class="weather-item"><span>🍃 AQHI</span><b id="wt-aqhi">--</b></div>
+                </div>
                 <div id="weather-alerts"></div>
+
+                <div class="forecast-modal" id="forecast-box">
+                    <div style="font-weight: bold; margin-bottom: 4px; color: var(--accent-blue);">未來 9 天天氣預報 (點擊關閉)</div>
+                    <div id="forecast-list">載入中...</div>
+                </div>
             </div>
         </div>
 
@@ -407,10 +368,9 @@
                 <div class="cat-box" onclick="interactWithBobo()">
                     <div class="cat-avatar-container">
                         <img id="bobo-img" src="bobo_playful.jpeg" alt="寶寶" class="bobo-photo" onerror="this.onerror=null; this.src='https://placehold.co/100x100/f472b6/ffffff?text=Bobo';">
-                        <span id="bobo-heart" class="heart-pop">❤️</span>
                     </div>
-                    <div class="cat-speech-container">
-                        <div class="cat-name">寶寶提醒你：</div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: bold;">寶寶提醒你：</div>
                         <div class="cat-speech" id="cat-text">載入中...</div>
                     </div>
                 </div>
@@ -423,20 +383,20 @@
                 </div>
 
                 <div class="fx-grid">
-                    <div class="fx-item active" id="item-USD" onclick="selectCurrency('USD')"><span class="fx-name">USD 美元</span><span class="fx-rate" id="rate-USD">7.800</span></div>
-                    <div class="fx-item" id="item-EUR" onclick="selectCurrency('EUR')"><span class="fx-name">EUR 歐元</span><span class="fx-rate" id="rate-EUR">8.450</span></div>
-                    <div class="fx-item" id="item-GBP" onclick="selectCurrency('GBP')"><span class="fx-name">GBP 英鎊</span><span class="fx-rate" id="rate-GBP">9.900</span></div>
-                    <div class="fx-item" id="item-CAD" onclick="selectCurrency('CAD')"><span class="fx-name">CAD 加元</span><span class="fx-rate" id="rate-CAD">5.750</span></div>
-                    <div class="fx-item" id="item-CHF" onclick="selectCurrency('CHF')"><span class="fx-name">CHF 瑞郎</span><span class="fx-rate" id="rate-CHF">8.850</span></div>
-                    <div class="fx-item" id="item-AUD" onclick="selectCurrency('AUD')"><span class="fx-name">AUD 澳元</span><span class="fx-rate" id="rate-AUD">5.150</span></div>
-                    <div class="fx-item" id="item-JPY" onclick="selectCurrency('JPY')"><span class="fx-name">JPY 日圓</span><span class="fx-rate" id="rate-JPY">0.052</span></div>
-                    <div class="fx-item" id="item-KRW" onclick="selectCurrency('KRW')"><span class="fx-name">KRW 韓圓</span><span class="fx-rate" id="rate-KRW">0.0058</span></div>
+                    <div class="fx-item active" id="item-USD" onclick="selectCurrency('USD')"><span style="font-size: 0.8rem; color: var(--text-secondary);">USD 美元</span><span id="rate-USD" style="font-weight: bold;">7.800</span></div>
+                    <div class="fx-item" id="item-EUR" onclick="selectCurrency('EUR')"><span style="font-size: 0.8rem; color: var(--text-secondary);">EUR 歐元</span><span id="rate-EUR">8.450</span></div>
+                    <div class="fx-item" id="item-GBP" onclick="selectCurrency('GBP')"><span style="font-size: 0.8rem; color: var(--text-secondary);">GBP 英鎊</span><span id="rate-GBP">9.900</span></div>
+                    <div class="fx-item" id="item-CAD" onclick="selectCurrency('CAD')"><span style="font-size: 0.8rem; color: var(--text-secondary);">CAD 加元</span><span id="rate-CAD">5.750</span></div>
+                    <div class="fx-item" id="item-CHF" onclick="selectCurrency('CHF')"><span style="font-size: 0.8rem; color: var(--text-secondary);">CHF 瑞郎</span><span id="rate-CHF">8.850</span></div>
+                    <div class="fx-item" id="item-AUD" onclick="selectCurrency('AUD')"><span style="font-size: 0.8rem; color: var(--text-secondary);">AUD 澳元</span><span id="rate-AUD">5.150</span></div>
+                    <div class="fx-item" id="item-JPY" onclick="selectCurrency('JPY')"><span style="font-size: 0.8rem; color: var(--text-secondary);">JPY 日圓</span><span id="rate-JPY">0.052</span></div>
+                    <div class="fx-item" id="item-KRW" onclick="selectCurrency('KRW')"><span style="font-size: 0.8rem; color: var(--text-secondary);">KRW 韓圓</span><span id="rate-KRW">0.0058</span></div>
                 </div>
 
                 <div class="fx-converter">
                     <div style="display: flex; align-items: center; gap: 4px;">
                         <span id="fx-dir-label" style="font-size: 0.8rem; color: #60a5fa; font-weight: bold;">USD ➜ HKD</span>
-                        <button class="swap-btn" onclick="toggleDirection()">⇄</button>
+                        <button onclick="toggleDirection()" style="background: var(--accent-blue); border: none; color: white; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">⇄</button>
                     </div>
                     <div style="display: flex; align-items: center; gap: 4px;">
                         <input type="number" id="fx-amount" value="100" oninput="calculateFX()">
@@ -455,282 +415,185 @@
         let workStartHour = parseInt(localStorage.getItem('workStart') || 9);
         let workEndHour = parseInt(localStorage.getItem('workEnd') || 18);
 
-        // 1. 時鐘與西曆日期
+        // 1. 時間與倒數邏輯
         function updateTime() {
             try {
                 const now = new Date();
                 document.getElementById('clock').textContent = now.toLocaleTimeString('zh-HK', { hour12: false });
                 const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
                 document.getElementById('date').textContent = now.toLocaleDateString('zh-HK', options);
+                
+                updateCountdowns(now);
                 updateWorkProgress(now);
             } catch(e) { console.error("Time Error:", e); }
         }
 
-        // 2. 寶寶語錄庫
-        const boboConfig = {
-            morning: { img: 'bobo_playful.jpeg', quotes: ["主子早晨！今日都要精精神神呀～ 🐾", "早安！記得飲杯溫水開工！☕", "寶寶已經貼貼你，今日工作一定順利！✨"] },
-            lunch: { img: 'bobo_happy.jpeg', quotes: ["Lunch 時間到！記得食飽啲呀！🍱", "唔好只顧住做嘢，快啲去食飯！🍗", "食飽飯休息下，寶寶陪你養精蓄銳～ 🍰"] },
-            afternoon: { img: 'bobo_curious.jpeg', quotes: ["坐太久啦，起身伸展下、飲杯水！💧", "眼睛攰唔攰呀？望下遠方放鬆下～ 🌿", "下午茶時間，吃個小點心休息 5 分鐘！🍩", "再堅持一陣間，今日進度好棒！💪"] },
-            leavingSoon: { img: 'bobo_love.jpeg', quotes: ["快放工啦！最後衝刺，準備收拾心情！🎒", "倒數階段！放工想點樣獎勵自己？✨", "準備放工啦！寶寶喺度等緊你！😸"] },
-            afterWork: { img: 'bobo_cozy.jpeg', quotes: ["🎉 恭喜放工！辛苦啦，快啲回家陪我！", "終於放工啦！今日做得好棒，好好休息下～ ❤️", "放工放工！今晚要去食好嘢定返屋企擼貓？🐾"] },
-            interaction: { img: 'bobo_shy.jpeg', quotes: ["喵～ 捏捏臉，你最棒啦！❤️", "（咕嚕咕嚕...）寶寶最鍾意你啦～ 🐾", "點擊成功！獲得寶寶的幸運加持 🍀", "偷懶被我發現囉～ 休息完繼續加油！😻"] }
-        };
-
-        let lastQuoteTime = 0;
-        let currentQuote = "";
-
-        function getStableQuote(quotes) {
-            const now = Date.now();
-            if (!currentQuote || now - lastQuoteTime > 20000 || !quotes.includes(currentQuote)) {
-                currentQuote = quotes[Math.floor(Math.random() * quotes.length)];
-                lastQuoteTime = now;
+        function updateCountdowns(now) {
+            // 放工時分秒倒數
+            const targetWork = new Date(now);
+            targetWork.setHours(workEndHour, 0, 0, 0);
+            
+            if (now >= targetWork) {
+                document.getElementById('cd-work').textContent = "已放工！🎉";
+                document.getElementById('cd-work').style.color = "var(--accent-green)";
+            } else {
+                const diffMs = targetWork - now;
+                const hrs = String(Math.floor(diffMs / 3600000)).padStart(2, '0');
+                const mins = String(Math.floor((diffMs % 3600000) / 60000)).padStart(2, '0');
+                const secs = String(Math.floor((diffMs % 60000) / 1000)).padStart(2, '0');
+                document.getElementById('cd-work').textContent = `${hrs}:${mins}:${secs}`;
+                document.getElementById('cd-work').style.color = "var(--accent-warn)";
             }
-            return currentQuote;
+
+            // 週末倒數 (以星期六 00:00 為目標)
+            const dayOfWeek = now.getDay(); // 0 is Sun, 6 is Sat
+            let daysToSat = 6 - dayOfWeek;
+            if (dayOfWeek === 0) daysToSat = 0; // 今日係周日
+            document.getElementById('cd-weekend').textContent = (dayOfWeek === 6 || dayOfWeek === 0) ? "放緊假 🥳" : `仲有 ${daysToSat} 天`;
+
+            // 公眾假期倒數
+            const holidays = [
+                { name: "中秋節後翌日", date: new Date(2026, 8, 26) },
+                { name: "國慶日", date: new Date(2026, 9, 1) },
+                { name: "重陽節翌日", date: new Date(2026, 9, 19) },
+                { name: "聖誕節", date: new Date(2026, 11, 25) },
+                { name: "元旦", date: new Date(2027, 0, 1) }
+            ];
+            const todayReset = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const nextH = holidays.find(h => h.date >= todayReset);
+            if (nextH) {
+                const diffDays = Math.round((nextH.date - todayReset) / (1000 * 60 * 60 * 24));
+                document.getElementById('holiday-name').textContent = `距離 ${nextH.name}`;
+                document.getElementById('cd-holiday').textContent = (diffDays === 0) ? `今日假期！` : `仲有 ${diffDays} 天`;
+            }
         }
 
-        // 3. 放工進度與寶寶狀態
-        window.isInteracting = false;
+        // 2. 寶寶對話與工作進度
+        const boboConfig = {
+            morning: { img: 'bobo_playful.jpeg', quotes: ["主子早晨！今日都要精精神神呀～ 🐾", "早安！記得飲杯溫水開工！☕"] },
+            lunch: { img: 'bobo_happy.jpeg', quotes: ["Lunch 時間到！記得食飽啲呀！🍱", "快啲去食飯，寶寶陪你養精蓄銳～ 🍰"] },
+            afternoon: { img: 'bobo_curious.jpeg', quotes: ["坐太久啦，起身伸展下！💧", "眼睛攰唔攰呀？望下遠方放鬆下～ 🌿"] },
+            leavingSoon: { img: 'bobo_love.jpeg', quotes: ["快放工啦！最後衝刺！🎒", "準備放工啦！寶寶喺度等緊你！😸"] },
+            afterWork: { img: 'bobo_cozy.jpeg', quotes: ["🎉 恭喜放工！辛苦啦，快啲回家陪我！", "終於放工啦！今晚食好嘢！❤️"] },
+            interaction: { img: 'bobo_shy.jpeg', quotes: ["喵～ 捏捏臉，你最棒啦！❤️", "（咕嚕咕嚕...）寶寶最鍾意你啦～ 🐾"] }
+        };
+
         function updateWorkProgress(now) {
-            try {
-                const currentHour = now.getHours() + now.getMinutes() / 60;
-                const totalWorkHours = workEndHour - workStartHour;
-                let percent = 0;
-                let currentStatus = boboConfig.morning;
+            const currentHour = now.getHours() + now.getMinutes() / 60;
+            const totalWorkHours = workEndHour - workStartHour;
+            let percent = 0;
+            let currentStatus = boboConfig.morning;
 
-                if (currentHour < workStartHour) {
-                    percent = 0;
-                    currentStatus = boboConfig.morning;
-                } else if (currentHour >= workEndHour) {
-                    percent = 100;
-                    currentStatus = boboConfig.afterWork;
-                } else {
-                    const elapsed = currentHour - workStartHour;
-                    percent = Math.min(100, Math.max(0, (elapsed / totalWorkHours) * 100));
+            if (currentHour < workStartHour) { percent = 0; currentStatus = boboConfig.morning; }
+            else if (currentHour >= workEndHour) { percent = 100; currentStatus = boboConfig.afterWork; }
+            else {
+                const elapsed = currentHour - workStartHour;
+                percent = Math.min(100, Math.max(0, (elapsed / totalWorkHours) * 100));
+                if (now.getHours() === 12) currentStatus = boboConfig.lunch;
+                else if (percent > 80) currentStatus = boboConfig.leavingSoon;
+                else currentStatus = boboConfig.afternoon;
+            }
 
-                    if (now.getHours() === 12 || (now.getHours() === 13 && now.getMinutes() < 30)) {
-                        currentStatus = boboConfig.lunch;
-                    } else if (percent > 80) {
-                        currentStatus = boboConfig.leavingSoon;
-                    } else {
-                        currentStatus = boboConfig.afternoon;
-                    }
-                }
+            document.getElementById('work-percent').textContent = `${percent.toFixed(0)}%`;
+            document.getElementById('work-bar').style.width = `${percent}%`;
 
-                document.getElementById('work-percent').textContent = `${percent.toFixed(0)}%`;
-                document.getElementById('work-bar').style.width = `${percent}%`;
-
-                if (!window.isInteracting) {
-                    const boboImg = document.getElementById('bobo-img');
-                    if (boboImg && boboImg.getAttribute('src') !== currentStatus.img && !boboImg.dataset.failed) {
-                        boboImg.src = currentStatus.img;
-                    }
-                    document.getElementById('cat-text').textContent = getStableQuote(currentStatus.quotes);
-                }
-            } catch(e) { console.error("Work progress Error:", e); }
+            if (!window.isInteracting) {
+                const boboImg = document.getElementById('bobo-img');
+                if (boboImg && boboImg.getAttribute('src') !== currentStatus.img) boboImg.src = currentStatus.img;
+                document.getElementById('cat-text').textContent = currentStatus.quotes[0];
+            }
         }
 
         function interactWithBobo() {
             window.isInteracting = true;
-            const status = boboConfig.interaction;
-
-            const boboImg = document.getElementById('bobo-img');
-            if (boboImg && !boboImg.dataset.failed) boboImg.src = status.img;
-            
-            const randomInteractQuote = status.quotes[Math.floor(Math.random() * status.quotes.length)];
-            document.getElementById('cat-text').textContent = randomInteractQuote;
-
-            const heartEl = document.getElementById('bobo-heart');
-            if (heartEl) {
-                heartEl.classList.remove('animate');
-                void heartEl.offsetWidth;
-                heartEl.classList.add('animate');
-            }
-
+            document.getElementById('bobo-img').src = boboConfig.interaction.img;
+            document.getElementById('cat-text').textContent = boboConfig.interaction.quotes[Math.floor(Math.random() * boboConfig.interaction.quotes.length)];
             clearTimeout(window.interactTimer);
-            window.interactTimer = setTimeout(() => {
-                window.isInteracting = false;
-                updateWorkProgress(new Date());
-            }, 8000);
+            window.interactTimer = setTimeout(() => { window.isInteracting = false; updateWorkProgress(new Date()); }, 6000);
         }
 
         function setWorkHours() {
             const start = prompt("請輸入上班時間 (0-23):", workStartHour);
             const end = prompt("請輸入放工時間 (0-23):", workEndHour);
-            if (start !== null && end !== null) {
-                workStartHour = parseInt(start) || 9;
-                workEndHour = parseInt(end) || 18;
-                localStorage.setItem('workStart', workStartHour);
-                localStorage.setItem('workEnd', workEndHour);
+            if (start && end) {
+                workStartHour = parseInt(start); workEndHour = parseInt(end);
+                localStorage.setItem('workStart', workStartHour); localStorage.setItem('workEnd', workEndHour);
                 updateTime();
             }
         }
 
-        // 4. 農曆
+        // 3. 農曆
         function updateLunarDate() {
             try {
                 const now = new Date();
                 const lunarText = new Intl.DateTimeFormat('zh-TN-u-ca-chinese', { day: 'numeric', month: 'long' }).format(now);
                 document.getElementById('lunar-info').textContent = `農曆 ${lunarText}`;
-            } catch (e) {
-                document.getElementById('lunar-info').textContent = '農曆計算中...';
-            }
+            } catch (e) { document.getElementById('lunar-info').textContent = '農曆計算中...'; }
         }
 
-        // 5. 假期倒數
-        function updateHolidayCountdown() {
-            try {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                const holidays = [
-                    { name: "中秋節後翌日", date: new Date(2026, 8, 26) },
-                    { name: "國慶日", date: new Date(2026, 9, 1) },
-                    { name: "重陽節翌日", date: new Date(2026, 9, 19) },
-                    { name: "聖誕節", date: new Date(2026, 11, 25) },
-                    { name: "元旦", date: new Date(2027, 0, 1) }
-                ];
-
-                const nextHoliday = holidays.find(h => h.date >= today);
-
-                if (nextHoliday) {
-                    const diffTime = nextHoliday.date - today;
-                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-                    const text = (diffDays === 0) ? `今日係 ${nextHoliday.name} 假期！` : `距離 ${nextHoliday.name}：仲有 ${diffDays} 天`;
-                    document.getElementById('countdown').textContent = text;
-                }
-            } catch(e) { console.error("Holiday Error:", e); }
-        }
-
-        // 6. 氣象與熱帶氣旋解析（多重 API 容錯）
+        // 4. 擴充版氣象與 AQHI 解析
         async function fetchWeather() {
-            const weatherEl = document.getElementById('weather-info');
-            const alertsEl = document.getElementById('weather-alerts');
-
             try {
+                // 即時天氣 (rhrread)
                 const res = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
                 const data = await res.json();
                 
-                if (data && data.temperature && data.temperature.data) {
-                    const temp = data.temperature.data[0].value;
-                    const humidity = data.humidity.data[0].value;
-                    weatherEl.innerHTML = `🌡️ <b>${temp}°C</b> &nbsp;|&nbsp; 💧 <b>${humidity}%</b>`;
-                }
+                if (data.temperature) document.getElementById('wt-temp').textContent = `${data.temperature.data[0].value}°C`;
+                if (data.humidity) document.getElementById('wt-humidity').textContent = `${data.humidity.data[0].value}%`;
+                if (data.uvindex) document.getElementById('wt-uv').textContent = `${data.uvindex.data[0].value}`;
+                else document.getElementById('wt-uv').textContent = "低";
 
+                // 風球與警告
                 let alertHtml = '';
-
-                // 檢查 rhrread 訊息
-                if (data && data.warningMessage && Array.isArray(data.warningMessage)) {
+                if (data.warningMessage && Array.isArray(data.warningMessage)) {
                     const warnText = data.warningMessage.join(' ');
-                    if (warnText.includes('一號') || warnText.includes('1號') || warnText.includes('TC1')) {
-                        alertHtml += `<span class="weather-alert alert-typhoon">🌀 一號戒備信號</span> `;
-                    } else if (warnText.includes('三號') || warnText.includes('3號') || warnText.includes('TC3')) {
-                        alertHtml += `<span class="weather-alert alert-typhoon">🌀 三號強風信號</span> `;
-                    } else if (warnText.includes('八號') || warnText.includes('8號')) {
-                        alertHtml += `<span class="weather-alert alert-typhoon">🌀 八號烈風或暴風信號</span> `;
-                    }
+                    if (warnText.includes('一號') || warnText.includes('TC1')) alertHtml += `<span class="weather-alert alert-typhoon">🌀 一號戒備信號</span> `;
+                    else if (warnText.includes('三號') || warnText.includes('TC3')) alertHtml += `<span class="weather-alert alert-typhoon">🌀 三號強風信號</span> `;
+                    else if (warnText.includes('八號')) alertHtml += `<span class="weather-alert alert-typhoon">🌀 八號烈風/暴風信號</span> `;
                 }
+                document.getElementById('weather-alerts').innerHTML = alertHtml;
+            } catch(e) { console.error(e); }
 
-                // 備用方案：讀取 warnsum API
-                try {
-                    const warnRes = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=tc');
-                    const warnData = await warnRes.json();
-                    
-                    if (warnData) {
-                        const jsonStr = JSON.stringify(warnData);
-                        if (warnData.WRAIN) {
-                            const code = warnData.WRAIN.code;
-                            if (code === 'WRAINA') alertHtml += `<span class="weather-alert alert-yellow-rain">🟡 黃色暴雨警告</span> `;
-                            else if (code === 'WRAINR') alertHtml += `<span class="weather-alert alert-red-rain">🔴 紅色暴雨警告</span> `;
-                            else if (code === 'WRAINB') alertHtml += `<span class="weather-alert alert-black-rain">⚫ 黑色暴雨警告</span> `;
-                        }
-                        
-                        if (!alertHtml.includes('🌀') && (jsonStr.includes('WTC') || jsonStr.includes('TC1') || jsonStr.includes('一號') || jsonStr.includes('WTCNL'))) {
-                            alertHtml += `<span class="weather-alert alert-typhoon">🌀 一號戒備信號</span> `;
-                        }
-                    }
-                } catch(e) { console.warn("Warnsum check skipped", e); }
+            // 空氣質素 AQHI (從環保署開放數據)
+            try {
+                const aqRes = await fetch('https://expdb.epd.gov.hk/aqhi/json/aqhi_ind_tc.json');
+                const aqData = await aqRes.json();
+                if (aqData && aqData[0]) document.getElementById('wt-aqhi').textContent = `${aqData[0].aqhi} (${aqData[0].health_risk})`;
+            } catch(e) { document.getElementById('wt-aqhi').textContent = "2 (低)"; }
 
-                alertsEl.innerHTML = alertHtml;
-            } catch (err) {
-                weatherEl.innerHTML = '🌡️ <b>25°C</b> &nbsp;|&nbsp; 💧 <b>75%</b>';
-            }
+            // 9天天氣預報
+            try {
+                const fRes = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=tc');
+                const fData = await fRes.json();
+                if (fData.weatherForecast) {
+                    let html = '';
+                    fData.weatherForecast.forEach(day => {
+                        const dateStr = `${day.forecastDate.substring(4,6)}/${day.forecastDate.substring(6,8)} (${day.week})`;
+                        html += `<div class="forecast-row"><span>${dateStr}</span><span>${day.forecastMintemp.value}-${day.forecastMaxtemp.value}°C</span><span>${day.forecastForecast}</span></div>`;
+                    });
+                    document.getElementById('forecast-list').innerHTML = html;
+                }
+            } catch(e) { document.getElementById('forecast-list').textContent = "未能加載預報"; }
         }
 
-        // 7. 恆生指數（採用 JSONP 模式避免跨域 CORS 阻塞）
-        function fetchHSI() {
-            const priceEl = document.getElementById('hsi-price');
-            const changeEl = document.getElementById('hsi-change');
-            const timeEl = document.getElementById('hsi-update-time');
-
-            // 清理舊有的 Script 標籤
-            const oldScript = document.getElementById('hsi-script');
-            if (oldScript) oldScript.remove();
-
-            window.hsiCallback = function(data) {
-                try {
-                    // 新浪數據格式: hq_str_hkHSI
-                    if (typeof hq_str_hkHSI !== 'undefined' && hq_str_hkHSI) {
-                        const fields = hq_str_hkHSI.split(',');
-                        const currentPrice = parseFloat(fields[6]);
-                        const change = parseFloat(fields[7]);
-                        const changePercent = parseFloat(fields[8]);
-
-                        if (!isNaN(currentPrice)) {
-                            const isPositive = change >= 0;
-                            const sign = isPositive ? '+' : '';
-                            const color = isPositive ? 'var(--accent-green)' : 'var(--accent-red)';
-
-                            priceEl.textContent = currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                            changeEl.textContent = `${sign}${change.toFixed(2)} (${sign}${changePercent.toFixed(2)}%)`;
-                            changeEl.style.color = color;
-
-                            const now = new Date();
-                            timeEl.textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 更新`;
-                            return;
-                        }
-                    }
-                    throw new Error('HSI parsing error');
-                } catch (e) {
-                    priceEl.textContent = '17,800.50';
-                    changeEl.textContent = '+120.30 (+0.68%)';
-                    changeEl.style.color = 'var(--accent-green)';
-                }
-            };
-
-            const script = document.createElement('script');
-            script.id = 'hsi-script';
-            script.src = `https://hq.sinajs.cn/list=hkHSI&_=${Date.now()}`;
-            script.onload = () => { if(window.hsiCallback) window.hsiCallback(); };
-            script.onerror = () => {
-                priceEl.textContent = '17,800.50';
-                changeEl.textContent = '+120.30 (+0.68%)';
-                changeEl.style.color = 'var(--accent-green)';
-            };
-            document.body.appendChild(script);
+        function toggleForecast() {
+            const box = document.getElementById('forecast-box');
+            box.style.display = (box.style.display === 'block') ? 'none' : 'block';
         }
 
-        // 8. 外幣匯率
+        // 5. 外幣牌價
         async function fetchFX() {
             try {
                 const res = await fetch('https://open.er-api.com/v6/latest/HKD');
                 const data = await res.json();
-
                 if (data && data.rates) {
-                    for (let key in fxRates) {
-                        if (data.rates[key]) {
-                            fxRates[key] = 1 / data.rates[key];
-                        }
-                    }
+                    for (let key in fxRates) { if (data.rates[key]) fxRates[key] = 1 / data.rates[key]; }
                 }
-            } catch (err) {
-                console.warn('FX Network Fail, Using Local Fallback');
-            } finally {
+            } catch (err) {}
+            finally {
                 for (let key in fxRates) {
                     const rateEl = document.getElementById(`rate-${key}`);
-                    if (rateEl) {
-                        const decimals = (key === 'JPY' || key === 'KRW') ? 4 : 3;
-                        rateEl.textContent = fxRates[key].toFixed(decimals);
-                    }
+                    if (rateEl) rateEl.textContent = fxRates[key].toFixed((key==='JPY'||key==='KRW')?4:3);
                 }
                 const now = new Date();
                 document.getElementById('fx-update-time').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 更新`;
@@ -741,46 +604,34 @@
         function selectCurrency(curr) {
             selectedCurr = curr;
             document.querySelectorAll('.fx-item').forEach(el => el.classList.remove('active'));
-            const activeItem = document.getElementById(`item-${curr}`);
-            if (activeItem) activeItem.classList.add('active');
+            document.getElementById(`item-${curr}`).classList.add('active');
             calculateFX();
         }
 
-        function toggleDirection() {
-            isForeignToHkd = !isForeignToHkd;
-            calculateFX();
-        }
+        function toggleDirection() { isForeignToHkd = !isForeignToHkd; calculateFX(); }
 
         function calculateFX() {
             const amount = parseFloat(document.getElementById('fx-amount').value) || 0;
             const rate = fxRates[selectedCurr];
             const dirLabel = document.getElementById('fx-dir-label');
             const resultEl = document.getElementById('fx-result');
-
-            if (!resultEl || !dirLabel) return;
-
             if (isForeignToHkd) {
                 dirLabel.textContent = `${selectedCurr} ➜ HKD`;
-                const totalHKD = amount * rate;
-                resultEl.textContent = `$${totalHKD.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} HKD`;
+                resultEl.textContent = `$${(amount * rate).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} HKD`;
             } else {
                 dirLabel.textContent = `HKD ➜ ${selectedCurr}`;
-                const totalForeign = amount / rate;
-                resultEl.textContent = `${totalForeign.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${selectedCurr}`;
+                resultEl.textContent = `${(amount / rate).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${selectedCurr}`;
             }
         }
 
-        // 初始化與獨立定時器執行
+        // 初始化執行
         updateTime();
         updateLunarDate();
-        updateHolidayCountdown();
         fetchWeather();
-        fetchHSI();
         fetchFX();
 
         setInterval(updateTime, 1000);
         setInterval(fetchWeather, 300000);
-        setInterval(fetchHSI, 60000);
         setInterval(fetchFX, 1800000);
     </script>
 </body>
