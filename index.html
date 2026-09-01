@@ -174,54 +174,28 @@
             padding: 3px 0;
         }
 
-        /* 4. 工作與貓咪 */
+        /* 4. 大版面寶寶提醒卡片 */
         .work-cat-card {
-            flex: 1.45;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
-            justify-content: space-between;
-            padding: 8px 12px;
-        }
-
-        .progress-header {
+            flex: 1.8;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.85));
+            padding: 10px 14px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .progress-bar-bg {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            height: 8px;
-            width: 100%;
-            overflow: hidden;
-            margin: 4px 0;
-        }
-
-        .progress-bar-fill {
-            background: linear-gradient(90deg, #3b82f6, #10b981);
-            height: 100%;
-            width: 0%;
-            border-radius: 10px;
-            transition: width 0.5s ease-in-out;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .cat-box {
             display: flex;
             align-items: center;
-            gap: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 10px;
-            border-radius: 10px;
-            margin-top: 4px;
+            gap: 16px;
             cursor: pointer;
+            height: 100%;
         }
 
         .cat-avatar-container {
             position: relative;
-            width: 85px;
-            height: 85px;
+            width: 120px;
+            height: 120px;
             flex-shrink: 0;
         }
 
@@ -230,14 +204,28 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
+            border: 2px solid rgba(244, 114, 182, 0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             background-color: rgba(255,255,255,0.1);
         }
 
+        .cat-speech-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
         .cat-speech {
-            font-size: 0.95rem;
+            font-size: 1.25rem;
             color: var(--accent-pink);
-            font-weight: 600;
-            line-height: 1.35;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-top: 2px;
         }
 
         /* 5. 外幣牌價 */
@@ -355,22 +343,12 @@
 
         <div class="column">
             <div class="card work-cat-card">
-                <div>
-                    <div class="progress-header">
-                        <span onclick="setWorkHours()" style="cursor: pointer; text-decoration: underline;">放工進度 ⚙️</span>
-                        <span id="work-percent" style="font-weight: bold; color: #10b981;">0%</span>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" id="work-bar"></div>
-                    </div>
-                </div>
-
                 <div class="cat-box" onclick="interactWithBobo()">
                     <div class="cat-avatar-container">
-                        <img id="bobo-img" src="bobo_playful.jpeg" alt="寶寶" class="bobo-photo" onerror="this.onerror=null; this.src='https://placehold.co/100x100/f472b6/ffffff?text=Bobo';">
+                        <img id="bobo-img" src="bobo_playful.jpeg" alt="寶寶" class="bobo-photo" onerror="this.onerror=null; this.src='https://placehold.co/120x120/f472b6/ffffff?text=Bobo';">
                     </div>
-                    <div style="flex: 1;">
-                        <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: bold;">寶寶提醒你：</div>
+                    <div class="cat-speech-container">
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: bold;">🐾 寶寶提醒你：</div>
                         <div class="cat-speech" id="cat-text">載入中...</div>
                     </div>
                 </div>
@@ -412,7 +390,6 @@
         let selectedCurr = 'USD';
         let isForeignToHkd = true;
 
-        let workStartHour = parseInt(localStorage.getItem('workStart') || 9);
         let workEndHour = parseInt(localStorage.getItem('workEnd') || 18);
 
         // 1. 時間與倒數邏輯
@@ -424,7 +401,7 @@
                 document.getElementById('date').textContent = now.toLocaleDateString('zh-HK', options);
                 
                 updateCountdowns(now);
-                updateWorkProgress(now);
+                updateBoboState(now);
             } catch(e) { console.error("Time Error:", e); }
         }
 
@@ -445,10 +422,10 @@
                 document.getElementById('cd-work').style.color = "var(--accent-warn)";
             }
 
-            // 週末倒數 (以星期六 00:00 為目標)
-            const dayOfWeek = now.getDay(); // 0 is Sun, 6 is Sat
+            // 週末倒數
+            const dayOfWeek = now.getDay();
             let daysToSat = 6 - dayOfWeek;
-            if (dayOfWeek === 0) daysToSat = 0; // 今日係周日
+            if (dayOfWeek === 0) daysToSat = 0;
             document.getElementById('cd-weekend').textContent = (dayOfWeek === 6 || dayOfWeek === 0) ? "放緊假 🥳" : `仲有 ${daysToSat} 天`;
 
             // 公眾假期倒數
@@ -468,7 +445,7 @@
             }
         }
 
-        // 2. 寶寶對話與工作進度
+        // 2. 寶寶狀態與對話
         const boboConfig = {
             morning: { img: 'bobo_playful.jpeg', quotes: ["主子早晨！今日都要精精神神呀～ 🐾", "早安！記得飲杯溫水開工！☕"] },
             lunch: { img: 'bobo_happy.jpeg', quotes: ["Lunch 時間到！記得食飽啲呀！🍱", "快啲去食飯，寶寶陪你養精蓄銳～ 🍰"] },
@@ -478,24 +455,15 @@
             interaction: { img: 'bobo_shy.jpeg', quotes: ["喵～ 捏捏臉，你最棒啦！❤️", "（咕嚕咕嚕...）寶寶最鍾意你啦～ 🐾"] }
         };
 
-        function updateWorkProgress(now) {
-            const currentHour = now.getHours() + now.getMinutes() / 60;
-            const totalWorkHours = workEndHour - workStartHour;
-            let percent = 0;
+        function updateBoboState(now) {
+            const currentHour = now.getHours();
             let currentStatus = boboConfig.morning;
 
-            if (currentHour < workStartHour) { percent = 0; currentStatus = boboConfig.morning; }
-            else if (currentHour >= workEndHour) { percent = 100; currentStatus = boboConfig.afterWork; }
-            else {
-                const elapsed = currentHour - workStartHour;
-                percent = Math.min(100, Math.max(0, (elapsed / totalWorkHours) * 100));
-                if (now.getHours() === 12) currentStatus = boboConfig.lunch;
-                else if (percent > 80) currentStatus = boboConfig.leavingSoon;
-                else currentStatus = boboConfig.afternoon;
-            }
-
-            document.getElementById('work-percent').textContent = `${percent.toFixed(0)}%`;
-            document.getElementById('work-bar').style.width = `${percent}%`;
+            if (currentHour < 12) currentStatus = boboConfig.morning;
+            else if (currentHour === 12 || (currentHour === 13 && now.getMinutes() < 30)) currentStatus = boboConfig.lunch;
+            else if (currentHour < workEndHour - 1) currentStatus = boboConfig.afternoon;
+            else if (currentHour < workEndHour) currentStatus = boboConfig.leavingSoon;
+            else currentStatus = boboConfig.afterWork;
 
             if (!window.isInteracting) {
                 const boboImg = document.getElementById('bobo-img');
@@ -509,17 +477,7 @@
             document.getElementById('bobo-img').src = boboConfig.interaction.img;
             document.getElementById('cat-text').textContent = boboConfig.interaction.quotes[Math.floor(Math.random() * boboConfig.interaction.quotes.length)];
             clearTimeout(window.interactTimer);
-            window.interactTimer = setTimeout(() => { window.isInteracting = false; updateWorkProgress(new Date()); }, 6000);
-        }
-
-        function setWorkHours() {
-            const start = prompt("請輸入上班時間 (0-23):", workStartHour);
-            const end = prompt("請輸入放工時間 (0-23):", workEndHour);
-            if (start && end) {
-                workStartHour = parseInt(start); workEndHour = parseInt(end);
-                localStorage.setItem('workStart', workStartHour); localStorage.setItem('workEnd', workEndHour);
-                updateTime();
-            }
+            window.interactTimer = setTimeout(() => { window.isInteracting = false; updateTime(); }, 6000);
         }
 
         // 3. 農曆
@@ -531,10 +489,9 @@
             } catch (e) { document.getElementById('lunar-info').textContent = '農曆計算中...'; }
         }
 
-        // 4. 擴充版氣象與 AQHI 解析
+        // 4. 天氣與 AQHI 解析
         async function fetchWeather() {
             try {
-                // 即時天氣 (rhrread)
                 const res = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
                 const data = await res.json();
                 
@@ -543,7 +500,6 @@
                 if (data.uvindex) document.getElementById('wt-uv').textContent = `${data.uvindex.data[0].value}`;
                 else document.getElementById('wt-uv').textContent = "低";
 
-                // 風球與警告
                 let alertHtml = '';
                 if (data.warningMessage && Array.isArray(data.warningMessage)) {
                     const warnText = data.warningMessage.join(' ');
@@ -554,14 +510,12 @@
                 document.getElementById('weather-alerts').innerHTML = alertHtml;
             } catch(e) { console.error(e); }
 
-            // 空氣質素 AQHI (從環保署開放數據)
             try {
                 const aqRes = await fetch('https://expdb.epd.gov.hk/aqhi/json/aqhi_ind_tc.json');
                 const aqData = await aqRes.json();
                 if (aqData && aqData[0]) document.getElementById('wt-aqhi').textContent = `${aqData[0].aqhi} (${aqData[0].health_risk})`;
             } catch(e) { document.getElementById('wt-aqhi').textContent = "2 (低)"; }
 
-            // 9天天氣預報
             try {
                 const fRes = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=tc');
                 const fData = await fRes.json();
