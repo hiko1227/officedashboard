@@ -106,21 +106,64 @@
             display: inline-block;
         }
 
-        /* 天氣卡片 */
+        /* 天氣卡片與特別警告樣式 */
         .weather-card {
             flex: 1;
         }
 
         .weather-alert {
             display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 4px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* 脈衝閃爍動畫 */
+        @keyframes alertPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.04); opacity: 0.85; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .alert-yellow-rain {
+            background: #facc15;
+            color: #000000;
+            border: 1px solid #fde047;
+            animation: alertPulse 2s infinite ease-in-out;
+        }
+
+        .alert-red-rain {
+            background: #ef4444;
+            color: #ffffff;
+            border: 1px solid #fca5a5;
+            animation: alertPulse 1.2s infinite ease-in-out;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+        }
+
+        .alert-black-rain {
+            background: #000000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            animation: alertPulse 1s infinite ease-in-out;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+        }
+
+        .alert-typhoon {
+            background: linear-gradient(135deg, #a855f7, #6366f1);
+            color: #ffffff;
+            border: 1px solid #c084fc;
+            animation: alertPulse 1.5s infinite ease-in-out;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+
+        .alert-default {
             background: rgba(239, 68, 68, 0.25);
             color: #fca5a5;
             border: 1px solid rgba(239, 68, 68, 0.5);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            margin-top: 2px;
-            font-weight: bold;
         }
 
         /* 恆指卡片 */
@@ -182,7 +225,7 @@
             transition: width 0.5s ease-in-out;
         }
 
-        /* 寶寶頭像區塊（放大相片至 85px） */
+        /* 寶寶頭像區塊 */
         .cat-box {
             display: flex;
             align-items: center;
@@ -203,8 +246,8 @@
 
         .cat-avatar-container {
             position: relative;
-            width: 85px;  /* 相片尺寸加大 */
-            height: 85px; /* 相片尺寸加大 */
+            width: 85px;
+            height: 85px;
             flex-shrink: 0;
         }
 
@@ -358,7 +401,6 @@
 <body>
 
     <div class="dashboard-container">
-        <!-- 左欄：時間、恆指、天氣 -->
         <div class="column">
             <div class="card time-card">
                 <div id="clock">00:00:00</div>
@@ -385,7 +427,6 @@
             </div>
         </div>
 
-        <!-- 右欄：寶寶放工進度、即時匯率 -->
         <div class="column">
             <div class="card work-cat-card">
                 <div>
@@ -398,7 +439,6 @@
                     </div>
                 </div>
 
-                <!-- 寶寶陪伴區塊（放大高清圖） -->
                 <div class="cat-box" onclick="interactWithBobo()">
                     <div class="cat-avatar-container">
                         <img id="bobo-img" src="bobo_playful.jpeg" alt="寶寶" class="bobo-photo" onerror="this.src='https://placehold.co/100x100/f472b6/ffffff?text=Bobo'">
@@ -680,7 +720,7 @@
             }
         }
 
-        // 6. 天氣
+        // 6. 天氣與特別警告標示
         async function fetchWeather() {
             const weatherEl = document.getElementById('weather-info');
             const alertsEl = document.getElementById('weather-alerts');
@@ -704,12 +744,25 @@
                         const warn = warnData[key];
                         if (warn.name) {
                             let alertText = warn.name;
+                            let alertClass = "alert-default";
+
                             if (key === 'WRAIN') {
-                                if (warn.code === 'WRAINA') alertText = '黃雨';
-                                else if (warn.code === 'WRAINR') alertText = '紅雨';
-                                else if (warn.code === 'WRAINB') alertText = '黑雨';
+                                if (warn.code === 'WRAINA') {
+                                    alertText = '🟡 黃色暴雨警告';
+                                    alertClass = 'alert-yellow-rain';
+                                } else if (warn.code === 'WRAINR') {
+                                    alertText = '🔴 紅色暴雨警告';
+                                    alertClass = 'alert-red-rain';
+                                } else if (warn.code === 'WRAINB') {
+                                    alertText = '⚫ 黑色暴雨警告';
+                                    alertClass = 'alert-black-rain';
+                                }
+                            } else if (key === 'TCGNL') {
+                                alertText = `🌀 ${warn.name}`;
+                                alertClass = 'alert-typhoon';
                             }
-                            alertHtml += `<span class="weather-alert">⚠️ ${alertText}</span> `;
+
+                            alertHtml += `<span class="weather-alert ${alertClass}">${alertText}</span> `;
                         }
                     }
                 }
