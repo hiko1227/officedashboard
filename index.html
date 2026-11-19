@@ -95,7 +95,7 @@
             font-weight: 600;
         }
 
-        /* 2. 精簡版倒數儀表板（高度縮小） */
+        /* 2. 精簡版倒數儀表板 */
         .countdown-card { flex: 0.8; }
 
         .cd-grid {
@@ -338,7 +338,7 @@
             <div class="card weather-card" onclick="toggleForecast()">
                 <div class="card-title">
                     <span style="font-size: 0.9rem; color: #ffffff;">詳細天氣與空氣質素 🌤️</span>
-                    <span class="title-sub">點擊睇 9 天預報</span>
+                    <span class="title-sub" id="wt-status">點擊睇 9 天預報</span>
                 </div>
                 <div class="weather-grid">
                     <div class="weather-item">
@@ -412,11 +412,43 @@
     </div>
 
     <script>
-        let fxRates = { USD: 7.8, EUR: 8.45, GBP: 9.9, CAD: 5.75, CHF: 8.85, AUD: 5.15, JPY: 0.052, KRW: 0.0058 };
-        let selectedCurr = 'USD';
-        let isForeignToHkd = true;
+        var fxRates = { USD: 7.8, EUR: 8.45, GBP: 9.9, CAD: 5.75, CHF: 8.85, AUD: 5.15, JPY: 0.052, KRW: 0.0058 };
+        var selectedCurr = 'USD';
+        var isForeignToHkd = true;
+        var workEndHour = parseInt(localStorage.getItem('workEnd') || 18, 10);
 
-        let workEndHour = parseInt(localStorage.getItem('workEnd') || 18);
+        // 通用安全 Fetch（自動支援直連 + CORS 代理備援，專治 Kiosk Browser 限制）
+        async function safeFetchJson(targetUrl) {
+            // 嘗試 1：直接連線
+            try {
+                const res = await fetch(targetUrl, { cache: 'no-store' });
+                if (res.ok) return await res.json();
+            } catch (e) {
+                console.warn('Direct fetch failed, trying proxy for:', targetUrl);
+            }
+            // 嘗試 2：透過 AllOrigins CORS 代理
+            try {
+                const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(targetUrl);
+                const resProxy = await fetch(proxyUrl, { cache: 'no-store' });
+                if (resProxy.ok) {
+                    const wrapper = await resProxy.json();
+                    if (wrapper && wrapper.contents) {
+                        return JSON.parse(wrapper.contents);
+                    }
+                }
+            } catch (e2) {
+                console.warn('Proxy 1 failed:', e2);
+            }
+            // 嘗試 3：透過 CorsProxy.io
+            try {
+                const proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
+                const resProxy2 = await fetch(proxyUrl2, { cache: 'no-store' });
+                if (resProxy2.ok) return await resProxy2.json();
+            } catch (e3) {
+                console.error('All fetch attempts failed for:', targetUrl);
+            }
+            return null;
+        }
 
         // 1. 時間與倒數邏輯
         function updateTime() {
@@ -432,7 +464,6 @@
         }
 
         function updateCountdowns(now) {
-            // 放工時分秒倒數
             const targetWork = new Date(now);
             targetWork.setHours(workEndHour, 0, 0, 0);
             
@@ -448,19 +479,16 @@
                 document.getElementById('cd-work').style.color = "var(--accent-warn)";
             }
 
-            // 週末倒數
             const dayOfWeek = now.getDay();
             let daysToSat = 6 - dayOfWeek;
             if (dayOfWeek === 0) daysToSat = 0;
             document.getElementById('cd-weekend').textContent = (dayOfWeek === 6 || dayOfWeek === 0) ? "放緊假 🥳" : `仲有 ${daysToSat} 天`;
 
-            // 公眾假期倒數
             const holidays = [
-                { name: "中秋節後翌日", date: new Date(2026, 8, 26) },
-                { name: "國慶日", date: new Date(2026, 9, 1) },
-                { name: "重陽節翌日", date: new Date(2026, 9, 19) },
                 { name: "聖誕節", date: new Date(2026, 11, 25) },
-                { name: "元旦", date: new Date(2027, 0, 1) }
+                { name: "聖誕節後第一個周日", date: new Date(2026, 11, 26) },
+                { name: "元旦", date: new Date(2027, 0, 1) },
+                { name: "農曆年初一", date: new Date(2027, 1, 6) }
             ];
             const todayReset = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const nextH = holidays.find(h => h.date >= todayReset);
@@ -512,19 +540,31 @@
                 const now = new Date();
                 const lunarText = new Intl.DateTimeFormat('zh-TN-u-ca-chinese', { day: 'numeric', month: 'long' }).format(now);
                 document.getElementById('lunar-info').textContent = `農曆 ${lunarText}`;
-            } catch (e) { document.getElementById('lunar-info').textContent = '農曆計算中...'; }
+            } catch (e) { document.getElementById('lunar-info').textContent = ''; }
         }
 
-        // 4. 天氣與 AQHI 解析
+        // 4. 天氣與 AQHI 解析（Kiosk 強化容錯版）
         async function fetchWeather() {
-            try {
-                const res = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
-                const data = await res.json();
-                
-                if (data.temperature) document.getElementById('wt-temp').textContent = `${data.temperature.data[0].value}°C`;
-                if (data.humidity) document.getElementById('wt-humidity').textContent = `${data.humidity.data[0].value}%`;
-                if (data.uvindex) document.getElementById('wt-uv').textContent = `${data.uvindex.data[0].value}`;
-                else document.getElementById('wt-uv').textContent = "低";
+            const statusEl = document.getElementById('wt-status');
+            statusEl.textContent = '更新中...';
+
+            // A. 即時天氣
+            const data = await safeFetchJson('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc');
+            if (data) {
+                if (data.temperature && data.temperature.data && data.temperature.data.length > 0) {
+                    // 優先搵香港天文台（index 1 或搵名），否則取第一個讀數
+                    const hkoTemp = data.temperature.data.find(d => d.place === '香港天文台') || data.temperature.data[0];
+                    document.getElementById('wt-temp').textContent = `${hkoTemp.value}°C`;
+                }
+                if (data.humidity && data.humidity.data && data.humidity.data.length > 0) {
+                    document.getElementById('wt-humidity').textContent = `${data.humidity.data[0].value}%`;
+                }
+                // 安全檢查紫外線（晚上 API 會回傳空物件 {}，無 .data 陣列）
+                if (data.uvindex && data.uvindex.data && data.uvindex.data.length > 0) {
+                    document.getElementById('wt-uv').textContent = `${data.uvindex.data[0].value} (${data.uvindex.data[0].desc || ''})`;
+                } else {
+                    document.getElementById('wt-uv').textContent = "0 (低)";
+                }
 
                 let alertHtml = '';
                 if (data.warningMessage && Array.isArray(data.warningMessage)) {
@@ -532,28 +572,37 @@
                     if (warnText.includes('一號') || warnText.includes('TC1')) alertHtml += `<span class="weather-alert alert-typhoon">🌀 一號戒備信號</span> `;
                     else if (warnText.includes('三號') || warnText.includes('TC3')) alertHtml += `<span class="weather-alert alert-typhoon">🌀 三號強風信號</span> `;
                     else if (warnText.includes('八號')) alertHtml += `<span class="weather-alert alert-typhoon">🌀 八號烈風/暴風信號</span> `;
+                    else if (warnText.includes('黃色暴雨')) alertHtml += `<span class="weather-alert alert-typhoon" style="background:#eab308;color:#000;">🌧️ 黃色暴雨警告</span> `;
+                    else if (warnText.includes('紅色暴雨')) alertHtml += `<span class="weather-alert alert-typhoon" style="background:#ef4444;">🌧️ 紅色暴雨警告</span> `;
+                    else if (warnText.includes('黑色暴雨')) alertHtml += `<span class="weather-alert alert-typhoon" style="background:#111;">🌧️ 黑色暴雨警告</span> `;
                 }
                 document.getElementById('weather-alerts').innerHTML = alertHtml;
-            } catch(e) { console.error(e); }
+                statusEl.textContent = '點擊睇 9 天預報';
+            } else {
+                document.getElementById('wt-temp').textContent = '連線失敗';
+                statusEl.textContent = 'Kiosk 網路受阻';
+            }
 
-            try {
-                const aqRes = await fetch('https://expdb.epd.gov.hk/aqhi/json/aqhi_ind_tc.json');
-                const aqData = await aqRes.json();
-                if (aqData && aqData[0]) document.getElementById('wt-aqhi').textContent = `${aqData[0].aqhi} (${aqData[0].health_risk})`;
-            } catch(e) { document.getElementById('wt-aqhi').textContent = "2 (低)"; }
+            // B. 空氣質素 AQHI
+            const aqData = await safeFetchJson('https://expdb.epd.gov.hk/aqhi/json/aqhi_ind_tc.json');
+            if (aqData && Array.isArray(aqData) && aqData.length > 0) {
+                document.getElementById('wt-aqhi').textContent = `${aqData[0].aqhi} (${aqData[0].health_risk})`;
+            } else {
+                document.getElementById('wt-aqhi').textContent = "2 (低)";
+            }
 
-            try {
-                const fRes = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=tc');
-                const fData = await fRes.json();
-                if (fData.weatherForecast) {
-                    let html = '';
-                    fData.weatherForecast.forEach(day => {
-                        const dateStr = `${day.forecastDate.substring(4,6)}/${day.forecastDate.substring(6,8)} (${day.week})`;
-                        html += `<div class="forecast-row"><span>${dateStr}</span><span>${day.forecastMintemp.value}-${day.forecastMaxtemp.value}°C</span><span>${day.forecastForecast}</span></div>`;
-                    });
-                    document.getElementById('forecast-list').innerHTML = html;
-                }
-            } catch(e) { document.getElementById('forecast-list').textContent = "未能加載預報"; }
+            // C. 9天天氣預報
+            const fData = await safeFetchJson('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=tc');
+            if (fData && fData.weatherForecast) {
+                let html = '';
+                fData.weatherForecast.forEach(day => {
+                    const dateStr = `${day.forecastDate.substring(4,6)}/${day.forecastDate.substring(6,8)} (${day.week})`;
+                    html += `<div class="forecast-row"><span>${dateStr}</span><span>${day.forecastMintemp.value}-${day.forecastMaxtemp.value}°C</span><span>${day.forecastWeather || day.forecastForecast || ''}</span></div>`;
+                });
+                document.getElementById('forecast-list').innerHTML = html;
+            } else {
+                document.getElementById('forecast-list').textContent = "未能加載預報";
+            }
         }
 
         function toggleForecast() {
@@ -563,22 +612,19 @@
 
         // 5. 外幣牌價
         async function fetchFX() {
-            try {
-                const res = await fetch('https://open.er-api.com/v6/latest/HKD');
-                const data = await res.json();
-                if (data && data.rates) {
-                    for (let key in fxRates) { if (data.rates[key]) fxRates[key] = 1 / data.rates[key]; }
-                }
-            } catch (err) {}
-            finally {
+            const data = await safeFetchJson('https://open.er-api.com/v6/latest/HKD');
+            if (data && data.rates) {
                 for (let key in fxRates) {
-                    const rateEl = document.getElementById(`rate-${key}`);
-                    if (rateEl) rateEl.textContent = fxRates[key].toFixed((key==='JPY'||key==='KRW')?4:3);
+                    if (data.rates[key]) fxRates[key] = 1 / data.rates[key];
                 }
-                const now = new Date();
-                document.getElementById('fx-update-time').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 更新`;
-                calculateFX();
             }
+            for (let key in fxRates) {
+                const rateEl = document.getElementById(`rate-${key}`);
+                if (rateEl) rateEl.textContent = fxRates[key].toFixed((key==='JPY'||key==='KRW')?4:3);
+            }
+            const now = new Date();
+            document.getElementById('fx-update-time').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 更新`;
+            calculateFX();
         }
 
         function selectCurrency(curr) {
